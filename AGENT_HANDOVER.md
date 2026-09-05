@@ -33,16 +33,21 @@ language      → short, clear, low-token (caveman-style ok)
 
 ---
 
-## CURRENT STATUS (2026-08-18)
-- **Active Production Model**: DeepTrace V6 Dual-Stream Ensemble (`checkpoints/v3_e2e_multisource/best_model.pth` + `checkpoints/v5_srm_residual/best_model.pth`).
-- **In-Domain Kaggle Retention ($N=20,000$)**: **99.69% Accuracy · 0.99991 ROC-AUC · 0.9969 F1 · 0.0024 Brier** (Dominates MesoNet $84.16\%$ & XceptionNet $98.34\%$).
-- **FaceForensics++ DeepFakeDetection ($N=4,000$)**: **83.12% Accuracy · 0.9999 ROC-AUC · 0.8556 F1 · P(Fake)=1.0000**.
-- **FaceForensics++ Macro ($N=14,000$)**: **85.72% Macro Accuracy · 0.9231 Macro F1 · 0.6321 ROC-AUC**.
-- **FaceSwap Poisson Boundary Detection**: Jumped from $P(\text{Fake})=0.0000 \longrightarrow 0.5276 \longrightarrow \mathbf{0.8239}$ via 3-channel SRM high-pass residual filtering.
-- **Uncertainty Calibration**: Fitted $T^* = \mathbf{0.873507}$ strictly on validation set ($N=20,000$) $\longrightarrow$ Test Brier score = **$0.004000$**.
-- **Cross-Platform Auto-Detection**: [`utils/device.py`](file:///c:/Users/Udit/Desktop/deepfake1/utils/device.py) supports NVIDIA CUDA (Windows RTX 4050) & Apple Silicon MPS (macOS M4).
-- **All Checkpoints Isolated & Intact**: `v1_gan_finetune`, `v2_clip_finetune`, `v3_e2e_multisource`, `v4_seam_hardmining`, `v5_srm_residual`, `mesonet_baseline_seed42`, `xception_baseline_seed42`.
-- **Next Target (Phase 7)**: SOTA Multi-Spectral V7 (Continuous Phase FFT, 2-Level Wavelet Packet, 9-ch SRM/Gabor + Dynamic Self-Blended SBI Synthesis).
+## CURRENT STATUS (2026-08-21)
+- **Active Production Model**: DeepTrace V10 Robust Multi-Source (`checkpoints/v10_robust/best_model.pth`).
+- **Core Problem Solved**: Persistent JPEG augmentation (`p=0.7`) + balanced multi-source training successfully broke StyleGAN shortcut memorization and cured the web compression collapse.
+- **In-Domain Kaggle Retention (N=20,000)**: **99.69% Calibrated Accuracy · 0.9999 ROC-AUC · 0.0038 Brier Score** (9,966 TN / 9,971 TP).
+- **FF++ 100% Actor-Disjoint (5 Cohorts, N=14,200)**: **0.6070 Macro AUC** (Deepfakes: **0.6736 AUC**, FaceShifter: **0.6200 AUC**, FaceSwap: **0.5836 AUC**, NeuralTextures: **0.5801 AUC**, Face2Face: **0.5775 AUC**).
+- **Robustness Battery (14 Distortion Conditions)**:
+  - Pristine: `0.9074` AUC
+  - JPEG Q=90: `0.9067` AUC (99.9% retention)
+  - JPEG Q=70: `0.9070` AUC (100.0% retention)
+  - JPEG Q=50: `0.9051` AUC (99.7% retention)
+  - JPEG Q=30: `0.9010` AUC (99.3% retention)
+  - Gaussian Blur ($k=7$): `0.9056` AUC (99.8% retention)
+  - Downscale (scale=0.5): `0.9075` AUC (100.0% retention)
+- **All Checkpoints Preserved**: v1, v2, v3, v4, v5, v7, v9, v10_robust.
+- **Next Step (Phase 4)**: Ingest Diffusion datasets (CIFAKE / GenImage) via [`scripts/download_diffusion_data.py`](file:///c:/Users/Udit/Desktop/deepfake1/scripts/download_diffusion_data.py) to train V10-D.
 
 ---
 
@@ -197,14 +202,12 @@ RESULT:   99.39% acc, 0.9998 AUC, T=4.396, threshold=0.1341
 
 ---
 
-## NEXT ACTIONS (in order)
-1. `.venv\Scripts\python.exe scripts/train_gan_finetune.py --epochs 15 --batch_size 16`
-2. After: add `partial_unfreeze()` to `models/clip_alignment.py`
-3. Create `scripts/train_clip_finetune.py`
-4. Run CLIP finetune
-5. Fix `train_v2.py` → add `--v1_ckpt` + kaggle_realfake support
-6. Run V2 stages 1, 2, 4, 5
-7. Recalibrate + build RAG DB + evaluate
+## NEXT ACTIONS (in order — V10 Implementation Plan)
+1. **Phase 1**: Fix `datasets/transforms.py` — JPEG compression `p=0.7` standalone. Deprecate `faceforensics.py._apply_split()` with RuntimeError.
+2. **Phase 2**: Create `scripts/train_v10_robust.py` (copy V9, add Kaggle 10k+10k, use updated transforms). Train 20 epochs from V9/V7 warm start.
+3. **Phase 3**: Evaluate V10 — Kaggle in-domain, FF++ actor-disjoint 5-cohort, JPEG/blur/noise robustness. Create `scripts/evaluate_robustness.py`.
+4. **Phase 4**: Download CIFAKE + GenImage diffusion data. Create `scripts/train_v10d_diffusion.py`. Retrain with diffusion fakes.
+5. **Phase 5**: Final evaluation battery + update all governance files (MEMORY, HANDOVER, DECISIONS, CHANGES).
 
 ---
 

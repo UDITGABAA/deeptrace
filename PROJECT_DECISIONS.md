@@ -3,6 +3,34 @@
 
 ---
 
+## [2026-08-21] V10 Architecture Freeze — Fix Data, Not Architecture
+
+**Decision:** Do NOT add new modules, layers, or parameters for V10. Keep the existing V7/V9 architecture (119.7M params) and fix data composition + augmentation pipeline instead.
+**Rationale:** Full forensic audit (2026-08-20) confirmed the 0.5931 FF++ actor-disjoint AUC is caused by shortcut learning (StyleGAN lattice memorization) and missing compression robustness, not by insufficient model capacity. The 119M-param model with EfficientNet-B0 + 4-branch multi-spectral combiner + CLIP + cross-attention fusion has more than enough capacity — adding more parameters would accelerate shortcut memorization. The single highest-ROI change is JPEG compression augmentation at p=0.7 + balanced multi-source training data.
+
+---
+
+## [2026-08-21] Compression-First Training Augmentation for V10
+
+**Decision:** Move JPEG `ImageCompression` out of the `OneOf` block in `datasets/transforms.py` and apply it as a standalone step with `p=0.7` (up from effective ~17%).
+**Rationale:** The model achieves 99.8% AUC on pristine Kaggle images but collapses to 45–58% AUC on JPEG-compressed web data. GAN fingerprints exist in high-frequency coefficients that JPEG Q<70 destroys. By training with persistent compression augmentation, the model must learn mid-frequency and spatial boundary features that survive compression — the same features that generalize cross-dataset.
+
+---
+
+## [2026-08-21] Deprecation of `FaceForensicsDataset._apply_split()` with RuntimeError Guard
+
+**Decision:** Replace the body of `_apply_split()` in `datasets/faceforensics.py` with a `RuntimeError` that directs users to `utils/actor_splits.py`.
+**Rationale:** The sequential-slice split bug (lines 57–65) concatenates all reals first, then fakes, then slices by index — causing class-segregated splits. This bug was discovered in the 2026-08-16 audit and has been bypassed in practice via `ffpp_zeroshot.py` + `actor_splits.py`, but the broken method still exists and could be accidentally called. A hard RuntimeError prevents silent data contamination.
+
+---
+
+## [2026-08-21] V10 Multi-Source Balanced Training with Capped Kaggle Contribution
+
+**Decision:** Train V10 on balanced mix of Kaggle (10k real + 10k fake) + FF++ actor-disjoint train partition (all 5 manipulation types). Cap Kaggle contribution to prevent StyleGAN dominance.
+**Rationale:** V7/V9 trained on FF++ alone (~14k samples) while Kaggle has 100k+ samples. Uncapped Kaggle creates severe class imbalance toward StyleGAN detection. Capping at 10k+10k keeps Kaggle as a regularizer while FF++ manipulation diversity drives generalization. SBI (Self-Blended Images) remain as on-the-fly augmentation for boundary-aware training.
+
+---
+
 ## [2026-08-18] 3-Channel SRM Steganalysis Residual Filtering for Boundary Seams
 
 **Decision:** Pass 3-channel high-pass residual filter banks (Laplacian, 2nd-order horizontal, 2nd-order vertical) directly to the frequency stream during V5 training.

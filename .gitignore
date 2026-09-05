@@ -1,46 +1,60 @@
-# Virtual environments
+﻿# Virtual environments
 .venv/
 venv/
+env/
+ENV/
 
-# Dataset images (too large for GitHub)
+# Dataset images, raw archives & external testbeds (too large for GitHub)
 data/
 datasets/
 test_data/
 results_test/
+_new_dataset*/
 inference_output/
 results/diagnostic_audit/recompressed_kaggle/
 
-# Model checkpoints (large binary files)
+# Generated dataset manifests with local machine paths
+manifests/*.csv
+manifests/*.tsv
+
+# Internal diagnostic scratch
+audit_phase2_pretest/
+scratch/
+
+# Model checkpoints & weights (exceeds GitHub file size limit)
 checkpoints/
 *.pt
 *.pth
 *.ckpt
 *.bin
 *.safetensors
+*.onnx
+*.h5
 
-# Python cache
+# Python cache & build artifacts
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.egg-info/
+dist/
+build/
+*.whl
 
 # Logs
 logs/
 *.log
 
-# VS Code
+# IDE & Editor configs
 .vscode/
-
-# Jupyter
+.obsidian/
+.idea/
 .ipynb_checkpoints/
 
-# Misc
-*.egg-info/
-dist/
-build/
-
-# Large wheel files (CUDA wheels, etc.)
-*.whl
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
 
 # Environment & secrets — NEVER commit these
 .env
@@ -50,11 +64,3 @@ build/
 *api_key*
 secrets.py
 config_secret.py
-
-# Obsidian vault config (personal / machine-specific)
-.obsidian/
-
-# OS junk
-.DS_Store
-Thumbs.db
-desktop.ini

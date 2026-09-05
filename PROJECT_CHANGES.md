@@ -4,6 +4,46 @@
 
 ---
 
+## [2026-08-21] BENCHMARK — Phase 3: 2026 Full Benchmark & Robustness Matrix Complete
+- Scripts: `scripts/evaluate_v10_full_battery.py` and `scripts/evaluate_robustness.py`.
+- Kaggle In-Domain ($N=20,000$): **0.9999 ROC-AUC**, **99.69% Calibrated Accuracy**, **0.0038 Brier Score**.
+- FaceForensics++ 100% Actor-Disjoint ($N=14,200$ across 5 cohorts): **0.6070 Macro AUC** (Deepfakes: **0.6736 AUC**, FaceShifter: **0.6200 AUC**, FaceSwap: **0.5836 AUC**, NeuralTextures: **0.5801 AUC**, Face2Face: **0.5775 AUC**).
+- 14-Distortion Robustness Battery:
+  - Pristine: `0.9074` AUC
+  - JPEG Q=90: `0.9067` AUC (99.9% retention)
+  - JPEG Q=70: `0.9070` AUC (100.0% retention)
+  - JPEG Q=50: `0.9051` AUC (99.7% retention)
+  - JPEG Q=30: `0.9010` AUC (99.3% retention)
+  - Gaussian Blur ($k=7$): `0.9056` AUC (99.8% retention)
+  - Downscaling ($0.5\times$): `0.9075` AUC (100.0% retention)
+- Output files: `results/benchmark_eval_v10/v10_final_evaluation.json`, `results/benchmark_eval_v10/robustness_results.json`.
+
+---
+
+## [2026-08-21] TRAIN — Phase 2: DeepTrace V10 Robust Multi-Source Training Complete
+- Script: `scripts/train_v10_robust.py` (10 epochs, batch size 32, accumulation 2, AdamW cosine annealing).
+- Dataset: 33,100 training samples (FF++ 600 actor-disjoint frames + Kaggle 5k real/5k fake + On-The-Fly SBI blending).
+- Best Validation ROC-AUC: **`0.8602`** (Epoch 7), Best Accuracy: **`76.82%`**.
+- Checkpoint: `checkpoints/v10_robust/best_model.pth` (592 MB).
+
+---
+
+## [2026-08-21] FIX — Phase 1: Robust JPEG Augmentations & FF++ Split Deprecation
+- `datasets/transforms.py`: Raised JPEG compression probability to `p=0.7` standalone (moved out of `OneOf` block) to force model to learn compression-invariant boundary features.
+- `datasets/faceforensics.py`: Replaced corrupted sequential-slice `_apply_split()` method with explicit `RuntimeError` deprecation guard pointing to `utils/actor_splits.py`.
+- Automated tests passed: tensor shape verification (3, 160, 160) and deprecation guard check.
+
+---
+
+## [2026-08-21] PLAN — V10 Robust Multi-Source Training Implementation Plan
+- Full forensic audit confirmed shortcut learning (StyleGAN lattice memorization) as root cause of 59.31% FF++ cross-dataset AUC.
+- 5-phase plan created: (1) Fix JPEG augmentation p=0.7, (2) Multi-source training, (3) Full benchmark battery, (4) Diffusion data expansion, (5) Final eval + governance.
+- Architecture freeze decision: no new modules or parameters — fix data pipeline first.
+- Governance files updated: PROJECT_MEMORY.yaml, PROJECT_DECISIONS.md, AGENT_HANDOVER.md.
+- Implementation plan: stored in Antigravity artifact directory as implementation_plan.md.
+
+---
+
 ## [2026-08-18] ENSEMBLE & VISUAL — V6 Dual-Stream Multimodal Ensemble Complete
 - Script: `scripts/evaluate_v6_ensemble.py` & `scripts/generate_v6_gradcam_artifacts.py`
 - Fusion: Convex combination of Macro Stream (V3-E2E: Spatial + 2D-DCT + CLIP) and Microscopic Residual Stream (V5-SRM: Spatial + 3-channel SRM High-Pass Residuals + CLIP).

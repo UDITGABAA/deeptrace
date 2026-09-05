@@ -1,0 +1,115 @@
+{
+  "checkpoint": "checkpoints/v10_robust/best_model.pth",
+  "device": "cuda",
+  "kaggle_in_domain": {
+    "auc": 0.9999,
+    "accuracy_05": 0.9964,
+    "calibrated_acc": 0.9969,
+    "optimal_threshold": 0.58,
+    "brier_score": 0.0038,
+    "count": 20000,
+    "confusion_matrix": [
+      [
+        9966,
+        34
+      ],
+      [
+        29,
+        9971
+      ]
+    ]
+  },
+  "ffpp_actor_disjoint": {
+    "Deepfakes": {
+      "auc": 0.6736,
+      "accuracy_05": 0.593,
+      "calibrated_acc": 0.6296,
+      "optimal_threshold": 0.65,
+      "brier_score": 0.2449,
+      "count": 2840,
+      "confusion_matrix": [
+        [
+          1008,
+          412
+        ],
+        [
+          640,
+          780
+        ]
+      ]
+    },
+    "FaceSwap": {
+      "auc": 0.5836,
+      "accuracy_05": 0.5525,
+      "calibrated_acc": 0.5623,
+      "optimal_threshold": 0.62,
+      "brier_score": 0.2689,
+      "count": 2840,
+      "confusion_matrix": [
+        [
+          840,
+          580
+        ],
+        [
+          663,
+          757
+        ]
+      ]
+    },
+    "FaceShifter": {
+      "auc": 0.62,
+      "accuracy_05": 0.5718,
+      "calibrated_acc": 0.5824,
+      "optimal_threshold": 0.67,
+      "brier_score": 0.2552,
+      "count": 2840,
+      "confusion_matrix": [
+        [
+          1120,
+          300
+        ],
+        [
+          886,
+          534
+        ]
+      ]
+    },
+    "Face2Face": {
+      "auc": 0.5775,
+      "accuracy_05": 0.5472,
+      "calibrated_acc": 0.5599,
+      "optimal_threshold": 0.62,
+      "brier_score": 0.2727,
+      "count": 2840,
+      "confusion_matrix": [
+        [
+          840,
+          580
+        ],
+        [
+          670,
+          750
+        ]
+      ]
+    },
+    "NeuralTextures": {
+      "auc": 0.5801,
+      "accuracy_05": 0.5489,
+      "calibrated_acc": 0.5592,
+      "optimal_threshold": 0.65,
+      "brier_score": 0.271,
+      "count": 2840,
+      "confusion_matrix": [
+        [
+          1008,
+          412
+        ],
+        [
+          840,
+          580
+        ]
+      ]
+    },
+    "macro_auc": 0.607
+  }
+}

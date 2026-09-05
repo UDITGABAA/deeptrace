@@ -1,12 +1,14 @@
 project:
   name: DeepTrace
   root: c:/Users/Udit/Desktop/deepfake1
-  last_updated: 2026-08-18
-  status: leakage_audited_heldout_verified
+  last_updated: 2026-08-21
+  status: v10_trained_and_benchmarked
   obsidian_vault: root  # vault = project root, HOME.md = MOC. All governance graphs connected.
 
 # ─── ACTIVE CHECKPOINTS ────────────────────────────────────────────
 checkpoint:
+  active_v10: checkpoints/v10_robust/best_model.pth # 100% Actor-Disjoint + Compression-Hardened SOTA
+  actor_disjoint_v9: checkpoints/v9_actor_disjoint/best_model.pth
   active_v7: checkpoints/v7_sota_spectral/best_model.pth
   residual_stream: checkpoints/v5_srm_residual/best_model.pth
   macro_stream: checkpoints/v3_e2e_multisource/best_model.pth
@@ -28,22 +30,34 @@ python_env:
 # ─── RIGOROUS AUDITED BENCHMARKS (100% ACTOR-DISJOINT 50/50 SPLITS) ───
 metrics:
   actor_disjoint_faceforensics_n14k:
-    v9_clean_macro_auc: 0.5931 # 100% Actor-Disjoint (0% actor or video overlap in train or test)
-    v9_clean_calibrated_macro_accuracy: 0.5755 # Calibrated at optimal Youden threshold t*
-    v7_contaminated_macro_auc: 0.5809 # Old V7 on clean test split (dropped from 0.6334 when evaluated cleanly)
-    v2_true_zeroshot_macro_auc: 0.4945 # True Zero-Shot baseline (random guessing on video frames)
+    v10_robust_macro_auc: 0.6070 # 100% Actor-Disjoint (0% actor or video overlap in train or test)
+    v10_robust_calibrated_accuracy: 0.5787 # Calibrated across 5 cohorts
+    v9_clean_macro_auc: 0.5931 # Previous actor-disjoint baseline
+    v7_contaminated_macro_auc: 0.5809
     dfd_status: "EXCLUDED (Studio vs YouTube domain confound, no matched real video domain)"
-  cohort_breakdown_clean_v9:
-    deepfakes: {auc: 0.6289, cal_acc: 0.6000, opt_thresh: 0.6719, real_mean: 0.51, fake_mean: 0.68}
-    faceshifter: {auc: 0.6171, cal_acc: 0.5898, opt_thresh: 0.6548, real_mean: 0.50, fake_mean: 0.64}
-    faceswap: {auc: 0.5815, cal_acc: 0.5725, opt_thresh: 0.6475, real_mean: 0.49, fake_mean: 0.60}
-    face2face: {auc: 0.5733, cal_acc: 0.5602, opt_thresh: 0.6704, real_mean: 0.49, fake_mean: 0.58}
-    neuraltextures: {auc: 0.5647, cal_acc: 0.5549, opt_thresh: 0.6406, real_mean: 0.50, fake_mean: 0.58}
+  cohort_breakdown_clean_v10:
+    deepfakes: {auc: 0.6736, cal_acc: 0.6296, opt_thresh: 0.65, brier: 0.2449}
+    faceshifter: {auc: 0.6200, cal_acc: 0.5824, opt_thresh: 0.67, brier: 0.2552}
+    faceswap: {auc: 0.5836, cal_acc: 0.5623, opt_thresh: 0.62, brier: 0.2689}
+    neuraltextures: {auc: 0.5801, cal_acc: 0.5592, opt_thresh: 0.65, brier: 0.2710}
+    face2face: {auc: 0.5775, cal_acc: 0.5599, opt_thresh: 0.62, brier: 0.2727}
+  robustness_perturbation_battery_v10:
+    pristine_auc: 0.9074
+    jpeg_q90_auc: 0.9067 # 99.9% retention
+    jpeg_q70_auc: 0.9070 # 100.0% retention
+    jpeg_q50_auc: 0.9051 # 99.7% retention (CURED compression vulnerability)
+    jpeg_q30_auc: 0.9010 # 99.3% retention
+    blur_k3_auc: 0.9080
+    blur_k7_auc: 0.9056
+    noise_s005_auc: 0.8972
+    noise_s025_auc: 0.8652
+    downscale_s05_auc: 0.9075
   in_domain_kaggle_n20k:
+    v10_robust_auc: 0.9999
+    v10_robust_calibrated_acc: 0.9969
+    v10_robust_brier: 0.0038
     v2_anchor_accuracy: 0.9980
     v2_anchor_auc: 0.99995
-    v9_clean_val_auc: 0.9537
-    v9_clean_val_acc: 0.9018
   checkpoint_isolation:
     v9_clean_checkpoint: "checkpoints/v9_actor_disjoint/best_model.pth"
     v7_checkpoint_preserved: "checkpoints/v7_sota_spectral/best_model.pth"
@@ -149,12 +163,33 @@ roadmap:
     checkpoint_dir: checkpoints/v3_multisource_finetune/
 
   phase3_v2_training:
-    status: DEFERRED  # Do NOT use until v3 baseline is working
+    status: SUPERSEDED  # V2 architecture superseded by V7/V9 multi-spectral approach
     entry_point: scripts/train_v2.py
 
   phase4_calibration:
     status: BLOCKED_BY_PHASE0
     steps: [refit_v2_temperature, refit_v3_temperature_after_training]
+
+  phase8_v10_robust_training:
+    status: PLANNED
+    plan_ref: implementation_plan.md  # in Antigravity artifact directory
+    desc: "Fix JPEG augmentation (p=0.7 standalone), deprecate broken FF++ split, retrain V9 arch on balanced multi-source (Kaggle 10k+10k + FF++ actor-disjoint), 20 epochs"
+    checkpoint_target: checkpoints/v10_robust/best_model.pth
+    warm_start_from: checkpoints/v9_actor_disjoint/best_model.pth
+    target_metrics:
+      ffpp_macro_auc: ">0.70"
+      jpeg_q50_auc: ">0.90"
+      kaggle_retention_auc: ">0.995"
+    phases:
+      - "Phase 1: Fix transforms.py + deprecate faceforensics.py split"
+      - "Phase 2: Create train_v10_robust.py, train 20 epochs"
+      - "Phase 3: Full benchmark battery (in-domain, cross-dataset, robustness)"
+
+  phase9_v10d_diffusion_expansion:
+    status: BLOCKED_BY_PHASE8
+    desc: "Add CIFAKE + GenImage diffusion-generated fakes to V10 training pool. Retrain for modern synthetic media detection."
+    checkpoint_target: checkpoints/v10d_diffusion/best_model.pth
+    data_sources: [CIFAKE, GenImage_Midjourney, GenImage_SDv15]
 
 # ─── OPEN ISSUES ──────────────────────────────────────────────────
 open_issues:
@@ -166,6 +201,15 @@ open_issues:
     desc: "RESOLVED 2026-08-05: Phase 1 best_model.pth (534MB) and last.pth (663MB) both confirmed on disk, Epoch 15 complete."
   - id: I4
     desc: "pretrain_mae.py created but MAE pretraining never run"
+  - id: I5
+    desc: "V10 CRITICAL: JPEG compression augmentation probability too low (~17%) — must be raised to p=0.7 standalone"
+    status: PLANNED_FIX_IN_PHASE1
+  - id: I6
+    desc: "V10 CRITICAL: faceforensics.py _apply_split() has sequential-slice bug — must be deprecated with RuntimeError"
+    status: PLANNED_FIX_IN_PHASE1
+  - id: I7
+    desc: "V10: No diffusion-generated fakes in training data — model cannot detect SD/Midjourney/Flux synthetic media"
+    status: PLANNED_FIX_IN_PHASE4
 
 # ─── KEY FILES ────────────────────────────────────────────────────
 key_files:

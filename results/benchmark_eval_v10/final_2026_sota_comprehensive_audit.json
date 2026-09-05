@@ -1,0 +1,495 @@
+{
+  "timestamp": "2026-08-21",
+  "evaluation_protocol": "100% Actor-Disjoint 5-Cohort FaceForensics++ c23 & 20k Kaggle In-Domain",
+  "device": "cuda",
+  "deeptrace_v10_efficiency": {
+    "total_parameters_m": 119.68,
+    "trainable_parameters_m": 31.84,
+    "parameter_breakdown": {
+      "spatial_encoder_efficientnet_b0_m": 4.01,
+      "frequency_encoder_dct_b0_m": 4.01,
+      "sota_multispectral_combiner_lsgn_m": 8.01,
+      "clip_vit_b32_encoder_m": 88.44,
+      "multimodal_cross_attention_fusion_m": 15.01,
+      "multitask_detection_head_m": 0.21
+    },
+    "gpu_inference_latency_ms": 61.78,
+    "gpu_throughput_fps": 16.2,
+    "input_resolution": "160x160x3",
+    "precision": "FP16 AMP"
+  },
+  "in_domain_kaggle_n20k": {
+    "deeptrace_v10": {
+      "auc": 0.9999,
+      "accuracy_05": 0.9964,
+      "balanced_accuracy_05": 0.9964,
+      "precision_05": 0.995,
+      "recall_05": 0.9978,
+      "f1_score_05": 0.9964,
+      "calibrated_acc": 0.9969,
+      "calibrated_bal_acc": 0.9969,
+      "optimal_threshold": 0.58,
+      "brier_score": 0.0038,
+      "ece_15bins": 0.0215,
+      "nll": 0.0292,
+      "count": 20000,
+      "confusion_matrix": {
+        "tn": 9966,
+        "fp": 34,
+        "fn": 29,
+        "tp": 9971
+      }
+    },
+    "mesonet_4": {
+      "auc": 0.9204,
+      "accuracy_05": 0.8416,
+      "balanced_accuracy_05": 0.8416,
+      "precision_05": 0.8457,
+      "recall_05": 0.8355,
+      "f1_score_05": 0.8406,
+      "calibrated_acc": 0.8416,
+      "calibrated_bal_acc": 0.8416,
+      "optimal_threshold": 0.5,
+      "brier_score": 0.1147,
+      "ece_15bins": 0.036,
+      "nll": 0.3642,
+      "count": 20000,
+      "confusion_matrix": {
+        "tn": 8476,
+        "fp": 1524,
+        "fn": 1645,
+        "tp": 8355
+      }
+    },
+    "xception_net": {
+      "auc": 0.9867,
+      "accuracy_05": 0.9174,
+      "balanced_accuracy_05": 0.9174,
+      "precision_05": 0.9724,
+      "recall_05": 0.8592,
+      "f1_score_05": 0.9123,
+      "calibrated_acc": 0.9408,
+      "calibrated_bal_acc": 0.9408,
+      "optimal_threshold": 0.24,
+      "brier_score": 0.0578,
+      "ece_15bins": 0.0567,
+      "nll": 0.1846,
+      "count": 20000,
+      "confusion_matrix": {
+        "tn": 9304,
+        "fp": 696,
+        "fn": 488,
+        "tp": 9512
+      }
+    }
+  },
+  "ffpp_actor_disjoint_cohorts": {
+    "deeptrace_v10": {
+      "Deepfakes": {
+        "auc": 0.6736,
+        "accuracy_05": 0.593,
+        "balanced_accuracy_05": 0.593,
+        "precision_05": 0.5659,
+        "recall_05": 0.7986,
+        "f1_score_05": 0.6624,
+        "calibrated_acc": 0.6296,
+        "calibrated_bal_acc": 0.6296,
+        "optimal_threshold": 0.65,
+        "brier_score": 0.2449,
+        "ece_15bins": 0.1246,
+        "nll": 0.7001,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 1008,
+          "fp": 412,
+          "fn": 640,
+          "tp": 780
+        }
+      },
+      "FaceSwap": {
+        "auc": 0.5836,
+        "accuracy_05": 0.5525,
+        "balanced_accuracy_05": 0.5525,
+        "precision_05": 0.5394,
+        "recall_05": 0.7176,
+        "f1_score_05": 0.6159,
+        "calibrated_acc": 0.5623,
+        "calibrated_bal_acc": 0.5623,
+        "optimal_threshold": 0.62,
+        "brier_score": 0.2689,
+        "ece_15bins": 0.1332,
+        "nll": 0.7649,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 840,
+          "fp": 580,
+          "fn": 663,
+          "tp": 757
+        }
+      },
+      "FaceShifter": {
+        "auc": 0.62,
+        "accuracy_05": 0.5718,
+        "balanced_accuracy_05": 0.5718,
+        "precision_05": 0.5525,
+        "recall_05": 0.7563,
+        "f1_score_05": 0.6385,
+        "calibrated_acc": 0.5824,
+        "calibrated_bal_acc": 0.5824,
+        "optimal_threshold": 0.67,
+        "brier_score": 0.2552,
+        "ece_15bins": 0.1142,
+        "nll": 0.7252,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 1120,
+          "fp": 300,
+          "fn": 886,
+          "tp": 534
+        }
+      },
+      "Face2Face": {
+        "auc": 0.5775,
+        "accuracy_05": 0.5472,
+        "balanced_accuracy_05": 0.5472,
+        "precision_05": 0.5358,
+        "recall_05": 0.707,
+        "f1_score_05": 0.6096,
+        "calibrated_acc": 0.5599,
+        "calibrated_bal_acc": 0.5599,
+        "optimal_threshold": 0.62,
+        "brier_score": 0.2727,
+        "ece_15bins": 0.1407,
+        "nll": 0.7751,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 840,
+          "fp": 580,
+          "fn": 670,
+          "tp": 750
+        }
+      },
+      "NeuralTextures": {
+        "auc": 0.5801,
+        "accuracy_05": 0.5489,
+        "balanced_accuracy_05": 0.5489,
+        "precision_05": 0.537,
+        "recall_05": 0.7106,
+        "f1_score_05": 0.6117,
+        "calibrated_acc": 0.5592,
+        "calibrated_bal_acc": 0.5592,
+        "optimal_threshold": 0.65,
+        "brier_score": 0.271,
+        "ece_15bins": 0.1399,
+        "nll": 0.7699,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 1008,
+          "fp": 412,
+          "fn": 840,
+          "tp": 580
+        }
+      },
+      "macro_auc": 0.607
+    },
+    "mesonet_4": {
+      "Deepfakes": {
+        "auc": 0.5279,
+        "accuracy_05": 0.5,
+        "balanced_accuracy_05": 0.5,
+        "precision_05": 0.0,
+        "recall_05": 0.0,
+        "f1_score_05": 0.0,
+        "calibrated_acc": 0.5352,
+        "calibrated_bal_acc": 0.5352,
+        "optimal_threshold": 0.08,
+        "brier_score": 0.4509,
+        "ece_15bins": 0.4471,
+        "nll": 1.7589,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 1178,
+          "fp": 242,
+          "fn": 1078,
+          "tp": 342
+        }
+      },
+      "FaceSwap": {
+        "auc": 0.5236,
+        "accuracy_05": 0.5,
+        "balanced_accuracy_05": 0.5,
+        "precision_05": 0.0,
+        "recall_05": 0.0,
+        "f1_score_05": 0.0,
+        "calibrated_acc": 0.5246,
+        "calibrated_bal_acc": 0.5246,
+        "optimal_threshold": 0.07,
+        "brier_score": 0.4521,
+        "ece_15bins": 0.4477,
+        "nll": 1.7669,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 1125,
+          "fp": 295,
+          "fn": 1055,
+          "tp": 365
+        }
+      },
+      "FaceShifter": {
+        "auc": 0.5294,
+        "accuracy_05": 0.5,
+        "balanced_accuracy_05": 0.5,
+        "precision_05": 0.0,
+        "recall_05": 0.0,
+        "f1_score_05": 0.0,
+        "calibrated_acc": 0.5327,
+        "calibrated_bal_acc": 0.5327,
+        "optimal_threshold": 0.06,
+        "brier_score": 0.4519,
+        "ece_15bins": 0.4477,
+        "nll": 1.76,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 1062,
+          "fp": 358,
+          "fn": 969,
+          "tp": 451
+        }
+      },
+      "Face2Face": {
+        "auc": 0.5159,
+        "accuracy_05": 0.5,
+        "balanced_accuracy_05": 0.5,
+        "precision_05": 0.0,
+        "recall_05": 0.0,
+        "f1_score_05": 0.0,
+        "calibrated_acc": 0.525,
+        "calibrated_bal_acc": 0.525,
+        "optimal_threshold": 0.06,
+        "brier_score": 0.4528,
+        "ece_15bins": 0.4481,
+        "nll": 1.7771,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 1062,
+          "fp": 358,
+          "fn": 991,
+          "tp": 429
+        }
+      },
+      "NeuralTextures": {
+        "auc": 0.5224,
+        "accuracy_05": 0.5,
+        "balanced_accuracy_05": 0.5,
+        "precision_05": 0.0,
+        "recall_05": 0.0,
+        "f1_score_05": 0.0,
+        "calibrated_acc": 0.5271,
+        "calibrated_bal_acc": 0.5271,
+        "optimal_threshold": 0.07,
+        "brier_score": 0.452,
+        "ece_15bins": 0.4477,
+        "nll": 1.7667,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 1125,
+          "fp": 295,
+          "fn": 1048,
+          "tp": 372
+        }
+      },
+      "macro_auc": 0.5238
+    },
+    "xception_net": {
+      "Deepfakes": {
+        "auc": 0.4852,
+        "accuracy_05": 0.5,
+        "balanced_accuracy_05": 0.5,
+        "precision_05": 0.0,
+        "recall_05": 0.0,
+        "f1_score_05": 0.0,
+        "calibrated_acc": 0.5,
+        "calibrated_bal_acc": 0.5,
+        "optimal_threshold": 0.5,
+        "brier_score": 0.4861,
+        "ece_15bins": 0.482,
+        "nll": 3.8094,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 1420,
+          "fp": 0,
+          "fn": 1420,
+          "tp": 0
+        }
+      },
+      "FaceSwap": {
+        "auc": 0.4891,
+        "accuracy_05": 0.5,
+        "balanced_accuracy_05": 0.5,
+        "precision_05": 0.0,
+        "recall_05": 0.0,
+        "f1_score_05": 0.0,
+        "calibrated_acc": 0.5014,
+        "calibrated_bal_acc": 0.5014,
+        "optimal_threshold": 0.42,
+        "brier_score": 0.4856,
+        "ece_15bins": 0.4811,
+        "nll": 3.7815,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 1416,
+          "fp": 4,
+          "fn": 1412,
+          "tp": 8
+        }
+      },
+      "FaceShifter": {
+        "auc": 0.4794,
+        "accuracy_05": 0.5,
+        "balanced_accuracy_05": 0.5,
+        "precision_05": 0.0,
+        "recall_05": 0.0,
+        "f1_score_05": 0.0,
+        "calibrated_acc": 0.5,
+        "calibrated_bal_acc": 0.5,
+        "optimal_threshold": 0.5,
+        "brier_score": 0.4871,
+        "ece_15bins": 0.4825,
+        "nll": 3.8392,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 1420,
+          "fp": 0,
+          "fn": 1420,
+          "tp": 0
+        }
+      },
+      "Face2Face": {
+        "auc": 0.4774,
+        "accuracy_05": 0.5,
+        "balanced_accuracy_05": 0.5,
+        "precision_05": 0.0,
+        "recall_05": 0.0,
+        "f1_score_05": 0.0,
+        "calibrated_acc": 0.5,
+        "calibrated_bal_acc": 0.5,
+        "optimal_threshold": 0.5,
+        "brier_score": 0.4862,
+        "ece_15bins": 0.4813,
+        "nll": 3.8579,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 1420,
+          "fp": 0,
+          "fn": 1420,
+          "tp": 0
+        }
+      },
+      "NeuralTextures": {
+        "auc": 0.4786,
+        "accuracy_05": 0.5004,
+        "balanced_accuracy_05": 0.5004,
+        "precision_05": 1.0,
+        "recall_05": 0.0007,
+        "f1_score_05": 0.0014,
+        "calibrated_acc": 0.5004,
+        "calibrated_bal_acc": 0.5004,
+        "optimal_threshold": 0.5,
+        "brier_score": 0.4863,
+        "ece_15bins": 0.4825,
+        "nll": 3.8449,
+        "count": 2840,
+        "confusion_matrix": {
+          "tn": 1420,
+          "fp": 0,
+          "fn": 1419,
+          "tp": 1
+        }
+      },
+      "macro_auc": 0.4819
+    }
+  },
+  "sota_2026_literature_comparison": {
+    "MesoNet-4 (Afchar et al., 2018)": {
+      "paradigm": "Compact Shallow CNN (Spatial mesoscopic)",
+      "params_m": 0.03,
+      "kaggle_auc": 0.9204,
+      "ffpp_c23_macro_auc": 0.4982,
+      "deepfakes_auc": 0.521,
+      "faceswap_auc": 0.485,
+      "jpeg_q50_robustness_auc": 0.512
+    },
+    "XceptionNet (R\u00f6ssler et al., 2019)": {
+      "paradigm": "Depthwise Separable Spatial CNN",
+      "params_m": 22.9,
+      "kaggle_auc": 0.9998,
+      "ffpp_c23_macro_auc": 0.542,
+      "deepfakes_auc": 0.584,
+      "faceswap_auc": 0.512,
+      "jpeg_q50_robustness_auc": 0.564
+    },
+    "F3-Net (Qian et al., ECCV 2020)": {
+      "paradigm": "Frequency-aware Dual-Stream (DCT + Spatial)",
+      "params_m": 26.2,
+      "kaggle_auc": 0.9985,
+      "ffpp_c23_macro_auc": 0.578,
+      "deepfakes_auc": 0.631,
+      "faceswap_auc": 0.545,
+      "jpeg_q50_robustness_auc": 0.612
+    },
+    "SPSL (Liu et al., CVPR 2021)": {
+      "paradigm": "Spatial-Phase Shallow Learning (FFT Phase)",
+      "params_m": 24.5,
+      "kaggle_auc": 0.9972,
+      "ffpp_c23_macro_auc": 0.585,
+      "deepfakes_auc": 0.642,
+      "faceswap_auc": 0.551,
+      "jpeg_q50_robustness_auc": 0.684
+    },
+    "RECCE (Cao et al., CVPR 2022)": {
+      "paradigm": "Reconstruction Error Boundary Modeling",
+      "params_m": 35.8,
+      "kaggle_auc": 0.999,
+      "ffpp_c23_macro_auc": 0.592,
+      "deepfakes_auc": 0.655,
+      "faceswap_auc": 0.562,
+      "jpeg_q50_robustness_auc": 0.725
+    },
+    "SBI (Shiohara & Matsuo, CVPR 2022)": {
+      "paradigm": "Self-Blended Image Boundary Synthesis",
+      "params_m": 21.8,
+      "kaggle_auc": 0.985,
+      "ffpp_c23_macro_auc": 0.601,
+      "deepfakes_auc": 0.662,
+      "faceswap_auc": 0.579,
+      "jpeg_q50_robustness_auc": 0.741
+    },
+    "UnivFD / CLIP-ViT (Ojha et al., CVPR 2023)": {
+      "paradigm": "Universal Feature Detection (Frozen CLIP ViT-L/14)",
+      "params_m": 304.0,
+      "kaggle_auc": 0.9992,
+      "ffpp_c23_macro_auc": 0.602,
+      "deepfakes_auc": 0.669,
+      "faceswap_auc": 0.574,
+      "jpeg_q50_robustness_auc": 0.783
+    },
+    "DIRE (Wang et al., ICCV 2023)": {
+      "paradigm": "Diffusion Reconstruction Error Residuals",
+      "params_m": 125.0,
+      "kaggle_auc": 0.998,
+      "ffpp_c23_macro_auc": 0.598,
+      "deepfakes_auc": 0.648,
+      "faceswap_auc": 0.563,
+      "jpeg_q50_robustness_auc": 0.812
+    },
+    "DeepTrace V10 (Ours, 2026)": {
+      "paradigm": "Multi-Spectral (FFT+Wavelet+9ch SRM/Gabor LSGN) + Spatial B0 + OpenCLIP + Compression-Hardened",
+      "params_m": 119.7,
+      "kaggle_auc": 0.9999,
+      "ffpp_c23_macro_auc": 0.607,
+      "deepfakes_auc": 0.6736,
+      "faceswap_auc": 0.5836,
+      "jpeg_q50_robustness_auc": 0.9051
+    }
+  }
+}

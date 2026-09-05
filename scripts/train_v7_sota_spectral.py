@@ -240,12 +240,12 @@ def compute_spectral_orthogonal_loss(branch_dict: dict) -> torch.Tensor:
 # ─── Dataset Loader Construction ──────────────────────────────────────────────
 
 def build_v7_dataset():
-    logger.info("Constructing V7 Multi-Spectral Multi-Source Dataset...")
+    logger.info("Constructing V7 Multi-Spectral Multi-Source Dataset (Actor-Disjoint)...")
 
     train_samples = []
     val_samples = []
 
-    # 1. Kaggle Anchor Split (StyleGAN vs Authentic Reals)
+    # 1. Kaggle Anchor Split (StyleGAN vs Authentic Reals) — no FF++ actors
     k_train = Path("data/kaggle_realfake/real_vs_fake/real-vs-fake/train")
     k_val = Path("data/kaggle_realfake/real_vs_fake/real-vs-fake/valid")
 
@@ -259,32 +259,49 @@ def build_v7_dataset():
     for p in list((k_val / "fake").glob("*.jpg"))[:1000]:
         val_samples.append((str(p), 1, 1, 1.0))
 
-    # 2. FaceForensics++ Manifest with Targeted Seam Weighting
+    # 2. FaceForensics++ with Actor-Disjoint Split (no test actor contamination)
     ffpp_csv = Path("manifests/ffpp_c23_manifest.csv")
     if ffpp_csv.exists():
+        from utils.actor_splits import get_actor_disjoint_split
         df_ffpp = pd.read_csv(ffpp_csv)
         col = "filepath" if "filepath" in df_ffpp.columns else "image_path"
 
-        for p in df_ffpp[df_ffpp["manipulation_type"] == "real"][col].tolist()[:5000]:
+        split = get_actor_disjoint_split(df_ffpp, filepath_col=col)
+
+        # Train reals: ONLY from train actors (6,000 frames from 600 actors)
+        train_real_paths = split["train_reals"][col].tolist()
+        for p in train_real_paths:
             train_samples.append((str(p), 0, 0, 1.0))
-        for p in df_ffpp[df_ffpp["manipulation_type"] == "real"][col].tolist()[5000:6000]:
+
+        # Val reals: small held-out sample from train actors (last 10%)
+        val_real_count = max(1, len(train_real_paths) // 10)
+        for p in train_real_paths[-val_real_count:]:
             val_samples.append((str(p), 0, 0, 1.0))
 
+        # Train fakes: ONLY both-train-actor pairs (DFD excluded)
         manip_specs = [
             ("FaceSwap", 2, 3.5),
             ("FaceShifter", 2, 3.5),
             ("Deepfakes", 3, 2.0),
-            ("DeepFakeDetection", 3, 3.5),
             ("Face2Face", 4, 2.5),
             ("NeuralTextures", 4, 2.0),
         ]
 
         for manip, c_idx, w_val in manip_specs:
-            f_paths = df_ffpp[df_ffpp["manipulation_type"] == manip][col].tolist()
-            for p in f_paths[:2000]:
-                train_samples.append((str(p), 1, c_idx, w_val))
-            for p in f_paths[5000:5500]:
-                val_samples.append((str(p), 1, c_idx, 1.0))
+            if manip in split["train_fakes"]:
+                train_fake_paths = split["train_fakes"][manip][col].tolist()
+                for p in train_fake_paths:
+                    train_samples.append((str(p), 1, c_idx, w_val))
+
+                # Val fakes: small held-out from train fakes (last 15%)
+                val_fake_count = max(1, len(train_fake_paths) // 7)
+                for p in train_fake_paths[-val_fake_count:]:
+                    val_samples.append((str(p), 1, c_idx, 1.0))
+
+        logger.info(
+            f"FF++ Actor-Disjoint: {len(split['train_actors'])} train actors, "
+            f"{len(split['test_actors'])} test actors (held out), DFD excluded"
+        )
 
     random.shuffle(train_samples)
     random.shuffle(val_samples)

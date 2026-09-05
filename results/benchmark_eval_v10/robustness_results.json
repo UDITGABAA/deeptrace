@@ -1,0 +1,86 @@
+{
+  "pristine": {
+    "auc": 0.9074445,
+    "accuracy": 0.7775,
+    "brier_score": 0.1315721869468689,
+    "count": 4000
+  },
+  "jpeg_q90": {
+    "auc": 0.9066562499999999,
+    "accuracy": 0.77675,
+    "brier_score": 0.13184675574302673,
+    "count": 4000
+  },
+  "jpeg_q70": {
+    "auc": 0.907007375,
+    "accuracy": 0.778,
+    "brier_score": 0.13168399035930634,
+    "count": 4000
+  },
+  "jpeg_q50": {
+    "auc": 0.9050926250000001,
+    "accuracy": 0.77475,
+    "brier_score": 0.13301974534988403,
+    "count": 4000
+  },
+  "jpeg_q30": {
+    "auc": 0.901017875,
+    "accuracy": 0.774,
+    "brier_score": 0.13638123869895935,
+    "count": 4000
+  },
+  "blur_k3": {
+    "auc": 0.9080343750000001,
+    "accuracy": 0.777,
+    "brier_score": 0.1320561319589615,
+    "count": 4000
+  },
+  "blur_k5": {
+    "auc": 0.907601375,
+    "accuracy": 0.77675,
+    "brier_score": 0.13329452276229858,
+    "count": 4000
+  },
+  "blur_k7": {
+    "auc": 0.905566125,
+    "accuracy": 0.77325,
+    "brier_score": 0.13531771302223206,
+    "count": 4000
+  },
+  "noise_s005": {
+    "auc": 0.8971867499999999,
+    "accuracy": 0.75575,
+    "brier_score": 0.1455562859773636,
+    "count": 4000
+  },
+  "noise_s015": {
+    "auc": 0.8864265,
+    "accuracy": 0.73725,
+    "brier_score": 0.14917103946208954,
+    "count": 4000
+  },
+  "noise_s025": {
+    "auc": 0.86516375,
+    "accuracy": 0.72575,
+    "brier_score": 0.1596936285495758,
+    "count": 4000
+  },
+  "downscale_s09": {
+    "auc": 0.9078556249999999,
+    "accuracy": 0.77775,
+    "brier_score": 0.13179536163806915,
+    "count": 4000
+  },
+  "downscale_s07": {
+    "auc": 0.90898475,
+    "accuracy": 0.7815,
+    "brier_score": 0.1317620873451233,
+    "count": 4000
+  },
+  "downscale_s05": {
+    "auc": 0.90754025,
+    "accuracy": 0.777,
+    "brier_score": 0.13344018161296844,
+    "count": 4000
+  }
+}
