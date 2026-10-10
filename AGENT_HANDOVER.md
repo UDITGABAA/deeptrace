@@ -33,7 +33,24 @@ language      → short, clear, low-token (caveman-style ok)
 
 ---
 
-## CURRENT STATUS (2026-08-21)
+## ⚠️ AUDIT 2026-10-10 — READ FIRST
+- Full report: `audit_v10_claude/AUDIT_REPORT.md`. V10 numbers below reproduce exactly, but:
+- Kaggle test fakes (all 10k) were in V1 training via `D:\deepfake_data\...\train\fake` (MD5 copies). Folder moved to `D:\deepfake_data\_QUARANTINE_kaggle_test_fake_copies\`.
+- V10 lineage (V3/V4/V5) trained on FF++ "test" actors → "100% actor-disjoint" is false for V9/V10 weights.
+- V10 val set = 3,000 test-actor frames; "calibrated acc" tuned on test labels; robustness 0.907 is pooled Kaggle+FF++ (FF++ alone 0.644).
+- FF++ frames were never face-cropped. V10 memorises training scenes (mixed-pair probe AUC 0.10).
+- **Do not warm-start from any V1–V10 checkpoint.** Use `scripts/train_v11_clean.py` (guards enforce this).
+
+### V11 status (PAUSED 2026-10-11 00:08 by user, after epoch 5 of 15)
+- DONE: dup folder quarantined · FF++ face-cropped (59,980/60,000 kept; `manifests/ffpp_c23_faces256_manifest.csv`, crops in `D:\datasets\ffpp_c23\faces256\`) · 3-way split (540/60/400) · `utils/leakage_guard.py` · `scripts/train_v11_clean.py` · `scripts/evaluate_v11_honest.py` · `verify_no_leakage.py` CHECK 8 (lineage)
+- Guards on full run: 40,798 train files, 0 MD5 dups vs val / Kaggle test / FF++ test; 0 shared actors
+- Checkpoints: `checkpoints/v11_clean/best_model.pth` = epoch 5 (also `last.pth`), `training_history.json`, `data_manifest.json`; log `logs/v11_clean/train.log`
+- Val (60 unseen actors) by epoch, FF++ macro AUC / Kaggle AUC: e1 0.714/0.751 · e2 0.766/0.868 · e3 0.802/0.914 · e4 0.810/0.932 · **e5 0.812/0.942** (V10 on test actors: 0.62)
+- Val is small (34 fake videos/cohort) → noisy. TEST SET NOT YET EVALUATED (do it only once, after training ends)
+- RESUME: `venv\Scripts\python.exe scripts\train_v11_clean.py --resume checkpoints/v11_clean/last.pth` (continues at epoch 6; this first last.pth has no optimizer state → AdamW moments restart, LR schedule kept; later last.pth files include optimizer+scaler)
+- THEN: `venv\Scripts\python.exe scripts\evaluate_v11_honest.py --checkpoint checkpoints/v11_clean/best_model.pth`
+
+## CURRENT STATUS (2026-08-21) — superseded by audit above
 - **Active Production Model**: DeepTrace V10 Robust Multi-Source (`checkpoints/v10_robust/best_model.pth`).
 - **Core Problem Solved**: Persistent JPEG augmentation (`p=0.7`) + balanced multi-source training successfully broke StyleGAN shortcut memorization and cured the web compression collapse.
 - **In-Domain Kaggle Retention (N=20,000)**: **99.69% Calibrated Accuracy · 0.9999 ROC-AUC · 0.0038 Brier Score** (9,966 TN / 9,971 TP).
@@ -120,6 +137,12 @@ RESULT:   99.39% acc, 0.9998 AUC, T=4.396, threshold=0.1341
 
 ## METHOD CHANGES (newest first)
 
+### [2026-10-10] V11 clean protocol (`scripts/train_v11_clean.py`, `scripts/evaluate_v11_honest.py`)
+- Init ImageNet EffNet-B0 + OpenAI CLIP; CLIP ViT frozen (never runs at inference anyway — fused "CLIP token" = spatial_projection)
+- Unfrozen: EffNet blocks 4-6 + head, spectral combiner, fusion, head, CLIP projections
+- Sampler 50/50 real/fake, equal FF++ cohorts, SBI 10%; plain BCE + 0.15 manip CE
+- Select on val actors (0.75·FF++ val macro AUC + 0.25·Kaggle val AUC); eval with frozen val thresholds, per-domain, video-level + bootstrap CI
+
 ### [2026-07-03] Phase 1 training speed optimization
 - Skips unused frozen CLIP visual pass during GAN finetune
 - Enables CUDA `cudnn.benchmark`, TF32, and non-blocking H2D transfers
@@ -150,6 +173,27 @@ RESULT:   99.39% acc, 0.9998 AUC, T=4.396, threshold=0.1341
 ---
 
 ## MISTAKES & FIXES (newest first)
+
+### [2026-10-11] V11 resume hung at epoch-6 validation — Windows commit-memory MemoryError
+- Val DataLoader spawned 4 extra workers (each imports torch+CUDA, reserves GBs of commit) while game running → worker died at import, main process hung; epoch 6 lost
+- Fix: `--val_workers` default 0 (validate in-process), train `--num_workers` 3. Also earlier: `pin_memory` off by default (CUDA "resource already mapped")
+
+### [2026-10-10] CRITICAL — Kaggle test fakes used as training data (V1 → all later models)
+- `test/fake` copied as `stylegan_*` into extra GAN dir; "zero overlap" checked by FILENAME only
+- Fix: folder quarantined; `utils/leakage_guard.py` checks MD5 content; V11 retrains from ImageNet/CLIP
+
+### [2026-10-10] CRITICAL — V9/V10 warm-started from FF++-test-actor-contaminated V3/V4/V5
+- Fix: V11 clean init; `assert_clean_lineage()` refuses warm starts without `clean_lineage=True`
+
+### [2026-10-10] V10 val = test actors; eval threshold tuned on test labels
+- Fix: `get_actor_disjoint_split_3way` (540/60/400, same test actors); thresholds frozen from val in ckpt
+
+### [2026-10-10] V10 manipulation loss silently zero
+- `V10RobustDetector` read `manipulation_type_logits`; head returns `manipulation_logits` → `loss_manip` never computed
+- Fix: `V11Detector` captures `manipulation_logits` via hook
+
+### [2026-10-10] FF++ fed as full video frames (no face crop); SBI applied to fakes
+- Fix: `scripts/crop_ffpp_faces.py` (MTCNN, identical pipeline all classes) → `manifests/ffpp_c23_faces256_manifest.csv`; V11 SBI on reals → label fake
 
 ### [2026-07-03] CRITICAL — train_gan_finetune.py read wrong AUC metric key
 - `compute_metrics()` returns `roc_auc`, but `train_gan_finetune.py` read `metrics.get("auc", 0.0)`

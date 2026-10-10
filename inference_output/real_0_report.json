@@ -1,0 +1,10 @@
+{
+  "file": "test_data\\real\\real_0.jpg",
+  "prediction": "REAL",
+  "fake_probability": 0.0178,
+  "confidence": 0.8669,
+  "manipulation_type": "N/A",
+  "threshold": 0.1341,
+  "heatmap_path": "inference_output\\real_0_heatmap.png",
+  "forensic_explanation": "============================================================\nFORENSIC ANALYSIS REPORT\n============================================================\n\nFile: test_data\\real\\real_0.jpg\nVerdict: REAL\nConfidence: 86.7%\nFake Probability: 1.8%\n\n--- ANALYSIS SUMMARY ---\nNo manipulation detected. The media appears to be authentic.\n\nNo significant manipulation artifacts detected in spatial, frequency, or temporal domains.\n\nArtifact Heatmap: inference_output\\real_0_heatmap.png\n\n============================================================"
+}

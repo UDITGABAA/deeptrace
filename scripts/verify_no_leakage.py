@@ -127,10 +127,23 @@ def main():
             f"{'❌ CONTAMINATED' if contaminated else '✅ CLEAN'}"
         )
 
+    # ═══ CHECK 8: Checkpoint lineage (a clean split is useless if weights descend from a dirty run) ═══
+    from utils.leakage_guard import assert_clean_lineage
+    for ckpt in ["checkpoints/v11_clean/best_model.pth", "checkpoints/v10_robust/best_model.pth",
+                 "checkpoints/v9_actor_disjoint/best_model.pth"]:
+        if Path(ckpt).exists():
+            try:
+                assert_clean_lineage(ckpt)
+                logger.info(f"✅ CHECK 8 PASS: {ckpt} has clean_lineage=True")
+            except RuntimeError:
+                logger.error(f"❌ CHECK 8: {ckpt} has NO clean lineage (descends from runs trained on test "
+                             f"actors / Kaggle test fakes) — do not report it as actor-disjoint")
+
     # ═══ FINAL VERDICT ═══
     if all_passed:
         logger.info("\n" + "=" * 60)
-        logger.info("🟢 ALL CHECKS PASSED — Zero actor leakage in new split")
+        logger.info("🟢 SPLIT CHECKS PASSED — zero actor overlap in the split DEFINITION")
+        logger.info("   (this does not cover weights: see CHECK 8, and audit_v10_claude/AUDIT_REPORT.md)")
         logger.info("=" * 60)
     else:
         logger.error("\n" + "=" * 60)

@@ -150,3 +150,80 @@ def get_actor_disjoint_split(
     )
 
     return result
+
+
+VAL_SEED = 4242
+VAL_FRACTION = 0.10  # of train-actor pair-components and of singleton train actors
+
+
+def get_actor_disjoint_split_3way(
+    manifest_df: pd.DataFrame,
+    filepath_col: str = "filepath",
+) -> Dict:
+    """
+    Train / VAL / test actor-disjoint split. Test actors are IDENTICAL to
+    get_actor_disjoint_split() (same 400), so results stay comparable with V9/V10.
+
+    The 600 train actors are split again into train and val WITHOUT discarding any
+    fake video: FF++ train-train fakes form reciprocal pairs (A_B and B_A), so actors
+    are grouped into connected components (pairs or singletons) and whole components
+    are assigned to val. Val is used for checkpoint selection and threshold freezing;
+    the test actors must never be touched during training.
+
+    Returns the same keys as get_actor_disjoint_split() plus:
+        val_actors, val_reals, val_fakes  (and train_* restricted to the remaining actors)
+    """
+    base = get_actor_disjoint_split(manifest_df, filepath_col=filepath_col)
+    train_actors_all = base["train_actors"]
+
+    # Build actor graph from train-train fake videos (identical pairs across methods)
+    parent = {a: a for a in train_actors_all}
+
+    def find(a):
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    for df_m in base["train_fakes"].values():
+        for vid in df_m["video_id"].unique():
+            a, b = _extract_actor_ids(vid)
+            parent[find(a)] = find(b)
+    comps: Dict[str, List[str]] = {}
+    for a in train_actors_all:
+        comps.setdefault(find(a), []).append(a)
+    comp_list = sorted((sorted(c) for c in comps.values()), key=lambda c: c[0])
+    pairs = [c for c in comp_list if len(c) > 1]
+    singles = [c for c in comp_list if len(c) == 1]
+
+    rng = random.Random(VAL_SEED)
+    rng.shuffle(pairs)
+    rng.shuffle(singles)
+    val_comps = pairs[: round(len(pairs) * VAL_FRACTION)] + singles[: round(len(singles) * VAL_FRACTION)]
+    val_actors = set(a for c in val_comps for a in c)
+    train_actors = train_actors_all - val_actors
+    assert not (val_actors & base["test_actors"]) and not (train_actors & base["test_actors"])
+
+    def by_actors(df, actors):
+        ids = df["video_id"].apply(_extract_actor_ids)
+        return df[ids.apply(lambda t: t[0] in actors and t[1] in actors)]
+
+    train_reals = base["train_reals"][base["train_reals"]["video_id"].isin(train_actors)]
+    val_reals = base["train_reals"][base["train_reals"]["video_id"].isin(val_actors)]
+    train_fakes = {m: by_actors(d, train_actors) for m, d in base["train_fakes"].items()}
+    val_fakes = {m: by_actors(d, val_actors) for m, d in base["train_fakes"].items()}
+    for m, d in base["train_fakes"].items():
+        assert len(train_fakes[m]) + len(val_fakes[m]) == len(d), f"{m}: fake videos lost in val split"
+
+    result = dict(base)
+    result.update({
+        "train_actors": train_actors, "val_actors": val_actors,
+        "train_reals": train_reals, "val_reals": val_reals,
+        "train_fakes": train_fakes, "val_fakes": val_fakes,
+    })
+    logger.info(
+        f"3-way split: train={len(train_actors)} val={len(val_actors)} test={len(base['test_actors'])} actors | "
+        f"val reals={len(val_reals)} val fakes/cohort="
+        + ", ".join(f"{m}:{len(d)}" for m, d in val_fakes.items())
+    )
+    return result

@@ -1,0 +1,337 @@
+{
+  "1_actor_split_sanity": {
+    "actor_overlap": 0,
+    "n_train_actors": 600,
+    "n_test_actors": 400,
+    "test_reals_frames": 4000,
+    "train_reals_frames": 6000,
+    "Deepfakes": {
+      "train_frames": 3420,
+      "test_frames": 1420,
+      "discarded": 5160,
+      "test_frames_with_train_actor": 0,
+      "test_videos": 142
+    },
+    "FaceSwap": {
+      "train_frames": 3420,
+      "test_frames": 1420,
+      "discarded": 5160,
+      "test_frames_with_train_actor": 0,
+      "test_videos": 142
+    },
+    "FaceShifter": {
+      "train_frames": 3420,
+      "test_frames": 1420,
+      "discarded": 5160,
+      "test_frames_with_train_actor": 0,
+      "test_videos": 142
+    },
+    "Face2Face": {
+      "train_frames": 3420,
+      "test_frames": 1420,
+      "discarded": 5160,
+      "test_frames_with_train_actor": 0,
+      "test_videos": 142
+    },
+    "NeuralTextures": {
+      "train_frames": 3420,
+      "test_frames": 1420,
+      "discarded": 5160,
+      "test_frames_with_train_actor": 0,
+      "test_videos": 142
+    },
+    "frames_per_video": {
+      "count": 6999.0,
+      "mean": 9.999142734676383,
+      "std": 0.07171883951728415,
+      "min": 4.0,
+      "25%": 10.0,
+      "50%": 10.0,
+      "75%": 10.0,
+      "max": 10.0
+    }
+  },
+  "2_lineage_exposure": {
+    "V10": {
+      "n_train": 43100,
+      "n_val": 5000,
+      "ffpp_train_frames": 23100,
+      "ffpp_val_frames": 3000,
+      "train_val_exact_overlap": 0,
+      "val_frames_also_in_train_pct": 0.0,
+      "test_actors_seen_in_train": 0,
+      "test_actors_seen_in_val": 115,
+      "benchmark_frames_in_train": 0,
+      "benchmark_frames_in_val": 3000,
+      "train_labels": {
+        "real": 16000,
+        "fake": 27100
+      },
+      "kaggle_test_in_train": 0,
+      "kaggle_test_in_val": 0,
+      "benchmark_exposure_by_cohort": {
+        "Deepfakes": {
+          "in_train": 0,
+          "in_val": 1400,
+          "n": 2840
+        },
+        "FaceSwap": {
+          "in_train": 0,
+          "in_val": 1400,
+          "n": 2840
+        },
+        "FaceShifter": {
+          "in_train": 0,
+          "in_val": 1400,
+          "n": 2840
+        },
+        "Face2Face": {
+          "in_train": 0,
+          "in_val": 1400,
+          "n": 2840
+        },
+        "NeuralTextures": {
+          "in_train": 0,
+          "in_val": 1400,
+          "n": 2840
+        }
+      }
+    },
+    "V9": {
+      "n_train": 33100,
+      "n_val": 4000,
+      "ffpp_train_frames": 23100,
+      "ffpp_val_frames": 2000,
+      "train_val_exact_overlap": 2000,
+      "val_frames_also_in_train_pct": 50.0,
+      "test_actors_seen_in_train": 0,
+      "test_actors_seen_in_val": 0,
+      "benchmark_frames_in_train": 0,
+      "benchmark_frames_in_val": 0,
+      "train_labels": {
+        "real": 11000,
+        "fake": 22100
+      },
+      "kaggle_test_in_train": 0,
+      "kaggle_test_in_val": 0,
+      "benchmark_exposure_by_cohort": {
+        "Deepfakes": {
+          "in_train": 0,
+          "in_val": 0,
+          "n": 2840
+        },
+        "FaceSwap": {
+          "in_train": 0,
+          "in_val": 0,
+          "n": 2840
+        },
+        "FaceShifter": {
+          "in_train": 0,
+          "in_val": 0,
+          "n": 2840
+        },
+        "Face2Face": {
+          "in_train": 0,
+          "in_val": 0,
+          "n": 2840
+        },
+        "NeuralTextures": {
+          "in_train": 0,
+          "in_val": 0,
+          "n": 2840
+        }
+      }
+    },
+    "V7": {
+      "n_train": 33100,
+      "n_val": 5040,
+      "ffpp_train_frames": 23100,
+      "ffpp_val_frames": 3040,
+      "train_val_exact_overlap": 3040,
+      "val_frames_also_in_train_pct": 60.32,
+      "test_actors_seen_in_train": 0,
+      "test_actors_seen_in_val": 0,
+      "benchmark_frames_in_train": 0,
+      "benchmark_frames_in_val": 0,
+      "train_labels": {
+        "real": 11000,
+        "fake": 22100
+      },
+      "kaggle_test_in_train": 0,
+      "kaggle_test_in_val": 0,
+      "benchmark_exposure_by_cohort": {
+        "Deepfakes": {
+          "in_train": 0,
+          "in_val": 0,
+          "n": 2840
+        },
+        "FaceSwap": {
+          "in_train": 0,
+          "in_val": 0,
+          "n": 2840
+        },
+        "FaceShifter": {
+          "in_train": 0,
+          "in_val": 0,
+          "n": 2840
+        },
+        "Face2Face": {
+          "in_train": 0,
+          "in_val": 0,
+          "n": 2840
+        },
+        "NeuralTextures": {
+          "in_train": 0,
+          "in_val": 0,
+          "n": 2840
+        }
+      }
+    },
+    "V5": {
+      "n_train": 27000,
+      "n_val": 6000,
+      "ffpp_train_frames": 17000,
+      "ffpp_val_frames": 4000,
+      "train_val_exact_overlap": 0,
+      "val_frames_also_in_train_pct": 0.0,
+      "test_actors_seen_in_train": 235,
+      "test_actors_seen_in_val": 47,
+      "benchmark_frames_in_train": 3120,
+      "benchmark_frames_in_val": 250,
+      "train_labels": {
+        "real": 10000,
+        "fake": 17000
+      },
+      "kaggle_test_in_train": 0,
+      "kaggle_test_in_val": 0,
+      "benchmark_exposure_by_cohort": {
+        "Deepfakes": {
+          "in_train": 1750,
+          "in_val": 50,
+          "n": 2840
+        },
+        "FaceSwap": {
+          "in_train": 1750,
+          "in_val": 50,
+          "n": 2840
+        },
+        "FaceShifter": {
+          "in_train": 1750,
+          "in_val": 50,
+          "n": 2840
+        },
+        "Face2Face": {
+          "in_train": 1760,
+          "in_val": 50,
+          "n": 2840
+        },
+        "NeuralTextures": {
+          "in_train": 1790,
+          "in_val": 50,
+          "n": 2840
+        }
+      }
+    },
+    "V4": {
+      "n_train": 27000,
+      "n_val": 6000,
+      "ffpp_train_frames": 17000,
+      "ffpp_val_frames": 4000,
+      "train_val_exact_overlap": 0,
+      "val_frames_also_in_train_pct": 0.0,
+      "test_actors_seen_in_train": 235,
+      "test_actors_seen_in_val": 47,
+      "benchmark_frames_in_train": 3120,
+      "benchmark_frames_in_val": 250,
+      "train_labels": {
+        "real": 10000,
+        "fake": 17000
+      },
+      "kaggle_test_in_train": 0,
+      "kaggle_test_in_val": 0,
+      "benchmark_exposure_by_cohort": {
+        "Deepfakes": {
+          "in_train": 1750,
+          "in_val": 50,
+          "n": 2840
+        },
+        "FaceSwap": {
+          "in_train": 1750,
+          "in_val": 50,
+          "n": 2840
+        },
+        "FaceShifter": {
+          "in_train": 1750,
+          "in_val": 50,
+          "n": 2840
+        },
+        "Face2Face": {
+          "in_train": 1760,
+          "in_val": 50,
+          "n": 2840
+        },
+        "NeuralTextures": {
+          "in_train": 1790,
+          "in_val": 50,
+          "n": 2840
+        }
+      }
+    },
+    "V3": {
+      "n_train": 40000,
+      "n_val": 4800,
+      "ffpp_train_frames": 20000,
+      "ffpp_val_frames": 2800,
+      "train_val_exact_overlap": 0,
+      "val_frames_also_in_train_pct": 0.0,
+      "test_actors_seen_in_train": 400,
+      "test_actors_seen_in_val": 398,
+      "benchmark_frames_in_train": 2818,
+      "benchmark_frames_in_val": 419,
+      "train_labels": {
+        "real": 14000,
+        "fake": 26000
+      },
+      "kaggle_test_in_train": 0,
+      "kaggle_test_in_val": 0,
+      "benchmark_exposure_by_cohort": {
+        "Deepfakes": {
+          "in_train": 1057,
+          "in_val": 177,
+          "n": 2840
+        },
+        "FaceSwap": {
+          "in_train": 1038,
+          "in_val": 175,
+          "n": 2840
+        },
+        "FaceShifter": {
+          "in_train": 1054,
+          "in_val": 170,
+          "n": 2840
+        },
+        "Face2Face": {
+          "in_train": 1039,
+          "in_val": 177,
+          "n": 2840
+        },
+        "NeuralTextures": {
+          "in_train": 1010,
+          "in_val": 168,
+          "n": 2840
+        }
+      }
+    }
+  },
+  "3_ancestor_union": {
+    "benchmark_frames_seen_by_any_ancestor_training": 4817,
+    "benchmark_frames_total_unique": 8520,
+    "benchmark_videos_with_any_frame_in_ancestor_training": 284,
+    "benchmark_videos_total": 284,
+    "v10_val_frames_in_benchmark": 3000
+  },
+  "4_v10_sbi": {
+    "sbi_applied_to_label": "fake (binary_label == 1) \u2014 see train_v10_robust.py:157; reals never get SBI, label never flipped",
+    "v10_train_ffpp_fake_weight_vs_real": "fakes weighted 2.0-3.5, reals 1.2 (focal BCE)"
+  }
+}

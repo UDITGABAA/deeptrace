@@ -1,0 +1,38 @@
+2026-10-10 22:29:32,114 [INFO] Loading pretrained weights from Hugging Face hub (timm/efficientnet_b0.ra_in1k)
+2026-10-10 22:29:33,238 [INFO] HTTP Request: HEAD https://huggingface.co/timm/efficientnet_b0.ra_in1k/resolve/main/model.safetensors "HTTP/1.1 302 Found"
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-10-10 22:29:33,238 [WARNING] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-10-10 22:29:33,241 [INFO] [timm/efficientnet_b0.ra_in1k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-10 22:29:33,315 [INFO] SpatialEncoder: EfficientNet-B0 loaded (pretrained=True)
+2026-10-10 22:29:33,416 [INFO] Loading pretrained weights from Hugging Face hub (timm/efficientnet_b0.ra_in1k)
+2026-10-10 22:29:33,793 [INFO] HTTP Request: HEAD https://huggingface.co/timm/efficientnet_b0.ra_in1k/resolve/main/model.safetensors "HTTP/1.1 302 Found"
+2026-10-10 22:29:33,796 [INFO] [timm/efficientnet_b0.ra_in1k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-10 22:29:33,830 [INFO] FrequencyEncoder: EfficientNet-B0 on DCT input (3 channels)
+2026-10-10 22:29:34,323 [INFO] VideoSwinTransformerTiny: embed_dim=96, depths=[2, 2, 6, 2]
+2026-10-10 22:30:04,313 [INFO] Parsing model identifier. Schema: None, Identifier: ViT-B-32
+2026-10-10 22:30:04,313 [INFO] Loaded built-in ViT-B-32 model config.
+2026-10-10 22:30:05,004 [INFO] HTTP Request: HEAD https://huggingface.co/timm/vit_base_patch32_clip_224.openai/resolve/main/open_clip_model.safetensors "HTTP/1.1 302 Found"
+D:\deepfake1\venv\Lib\site-packages\open_clip\factory.py:450: UserWarning: QuickGELU mismatch between final model config (quick_gelu=False) and pretrained tag 'openai' (quick_gelu=True).
+  warnings.warn(
+2026-10-10 22:30:05,007 [INFO] Instantiating model architecture: CLIP
+2026-10-10 22:30:06,580 [INFO] Loading full pretrained weights from: C:\Users\Udit\.cache\huggingface\hub\models--timm--vit_base_patch32_clip_224.openai\snapshots\a6f597a30f7b82c51704746581f9a4e41421e878\open_clip_model.safetensors
+2026-10-10 22:30:07,054 [INFO] Final image preprocessing configuration set: {'size': (224, 224), 'mode': 'RGB', 'mean': (0.48145466, 0.4578275, 0.40821073), 'std': (0.26862954, 0.26130258, 0.27577711), 'interpolation': 'bicubic', 'resize_mode': 'shortest', 'fill_color': 0}
+2026-10-10 22:30:07,054 [INFO] Model ViT-B-32 creation process complete.
+2026-10-10 22:30:07,054 [INFO] CLIPAlignment: loaded ViT-B-32 (pretrained=openai)
+2026-10-10 22:30:07,055 [INFO] CLIP encoder frozen (no gradients)
+2026-10-10 22:30:07,182 [INFO] MultimodalFusion: hidden_dim=512, total_input=832
+2026-10-10 22:30:07,184 [INFO] DetectionHead: input=512, hidden=256, types=5
+2026-10-10 22:30:07,189 [INFO] DeepfakeDetector: 139.7M total params, 51.9M trainable
+2026-10-10 22:30:07,249 [INFO] SOTASpectralCombiner initialized: 8.01M params, output_dim=1280
+2026-10-10 22:30:08,897 [INFO] Model weights loaded from checkpoints/v9_actor_disjoint/best_model.pth
+2026-10-10 22:30:10,844 [INFO] Deepfakes: train=3420 frames (342 vids) | test=1420 frames (142 vids) | discarded=5160 frames (516 vids)
+2026-10-10 22:30:10,871 [INFO] FaceSwap: train=3420 frames (342 vids) | test=1420 frames (142 vids) | discarded=5160 frames (516 vids)
+2026-10-10 22:30:10,893 [INFO] FaceShifter: train=3420 frames (342 vids) | test=1420 frames (142 vids) | discarded=5160 frames (516 vids)
+2026-10-10 22:30:10,921 [INFO] Face2Face: train=3420 frames (342 vids) | test=1420 frames (142 vids) | discarded=5160 frames (516 vids)
+2026-10-10 22:30:10,948 [INFO] NeuralTextures: train=3420 frames (342 vids) | test=1420 frames (142 vids) | discarded=5160 frames (516 vids)
+2026-10-10 22:30:10,954 [INFO] Actor-Disjoint Split Summary:
+  Train actors: 600 | Test actors: 400
+  Train reals: 6000 frames | Test reals: 4000 frames
+  DFD: 9984 frames EXCLUDED (separate actor pool, no matching reals)
+[v9] main pools: 50104 imgs in 273s
+done

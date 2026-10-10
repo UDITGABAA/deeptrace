@@ -1,4 +1,4 @@
-﻿# Virtual environments
+# Virtual environments
 .venv/
 venv/
 env/
@@ -6,23 +6,21 @@ ENV/
 
 # Dataset images, raw archives & external testbeds (too large for GitHub)
 data/
-datasets/
-test_data/
 results_test/
 _new_dataset*/
-inference_output/
 results/diagnostic_audit/recompressed_kaggle/
 
-# Generated dataset manifests with local machine paths
-manifests/*.csv
-manifests/*.tsv
-
 # Internal diagnostic scratch
-audit_phase2_pretest/
 scratch/
 
 # Model checkpoints & weights (exceeds GitHub file size limit)
-checkpoints/
+checkpoints/**/*.pt
+checkpoints/**/*.pth
+checkpoints/**/*.ckpt
+checkpoints/**/*.bin
+checkpoints/**/*.safetensors
+checkpoints/**/*.onnx
+checkpoints/**/*.h5
 *.pt
 *.pth
 *.ckpt
@@ -30,6 +28,8 @@ checkpoints/
 *.safetensors
 *.onnx
 *.h5
+*.pkl
+
 
 # Python cache & build artifacts
 __pycache__/

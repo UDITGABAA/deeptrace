@@ -1,0 +1,9 @@
+{
+  "file": "data\\kaggle_realfake\\real_vs_fake\\real-vs-fake\\test\\fake\\03G6VANLKO.jpg",
+  "prediction": "FAKE",
+  "fake_probability": 1.0,
+  "confidence": 0.9999,
+  "manipulation_type": "Deepfakes",
+  "heatmap_path": "inference_output\\03G6VANLKO_heatmap.png",
+  "forensic_explanation": "============================================================\nFORENSIC ANALYSIS REPORT\n============================================================\n\nFile: data\\kaggle_realfake\\real_vs_fake\\real-vs-fake\\test\\fake\\03G6VANLKO.jpg\nVerdict: FAKE\nConfidence: 100.0%\nFake Probability: 100.0%\n\n--- MANIPULATION ANALYSIS ---\nDetected Type: Deepfakes\nDescription: Face swap manipulation detected using deep learning-based face replacement (Deepfakes/autoencoder method).\n\n--- ARTIFACT ANALYSIS ---\nSpatial artifacts include boundary inconsistencies, blending artifacts, and unnatural texture patterns at manipulation boundaries.\nFrequency domain analysis reveals abnormal DCT coefficients typical of GAN-generated or compressed-then-manipulated content.\n\n--- CONFIDENCE ASSESSMENT ---\nHIGH CONFIDENCE: Strong evidence of manipulation across multiple analysis domains.\n\nArtifact Heatmap: inference_output\\03G6VANLKO_heatmap.png\n\n============================================================"
+}

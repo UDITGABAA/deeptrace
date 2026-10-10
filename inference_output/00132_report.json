@@ -1,0 +1,8 @@
+{
+  "file": "data\\kaggle_realfake\\real_vs_fake\\real-vs-fake\\test\\real\\00132.jpg",
+  "prediction": "REAL",
+  "fake_probability": 0.0011,
+  "confidence": 0.9992,
+  "manipulation_type": "N/A",
+  "forensic_explanation": "============================================================\nFORENSIC ANALYSIS REPORT\n============================================================\n\nFile: data\\kaggle_realfake\\real_vs_fake\\real-vs-fake\\test\\real\\00132.jpg\nVerdict: REAL\nConfidence: 99.9%\nFake Probability: 0.1%\n\n--- ANALYSIS SUMMARY ---\nNo manipulation detected. The media appears to be authentic.\n\nNo significant manipulation artifacts detected in spatial, frequency, or temporal domains.\n\n============================================================"
+}

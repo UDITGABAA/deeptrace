@@ -1,0 +1,495 @@
+{
+  "unreadable_files": 0,
+  "exact_dup_groups": 10000,
+  "exact_dup_cross_split_groups": 10000,
+  "exact_dup_conflicting_label_groups": 0,
+  "exact_dup_split_combos": {
+    "('ext_stylegan_dir', 'test')": 10000
+  },
+  "kaggle_test_near_dups_in_train_or_valid(ham<=4)": 11356,
+  "ffpp_test_near_dups_in_train(ham<=4)": 196,
+  "metadata_by_source_label": {
+    "ffpp_DeepFakeDetection|label=1": {
+      "bytes": {
+        "mean": 370218.359,
+        "std": 104872.128,
+        "uniq": 9852
+      },
+      "w": {
+        "mean": 1920.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "h": {
+        "mean": 1080.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "q0": {
+        "mean": 369.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "q1": {
+        "mean": 558.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "sub": {
+        "mean": 2.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "grad": {
+        "mean": 12.204,
+        "std": 9.725,
+        "uniq": 9714
+      }
+    },
+    "ffpp_Deepfakes|label=1": {
+      "bytes": {
+        "mean": 138269.223,
+        "std": 82859.358,
+        "uniq": 9704
+      },
+      "w": {
+        "mean": 1036.348,
+        "std": 432.649,
+        "uniq": 28
+      },
+      "h": {
+        "mean": 636.718,
+        "std": 200.677,
+        "uniq": 4
+      },
+      "q0": {
+        "mean": 369.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "q1": {
+        "mean": 558.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "sub": {
+        "mean": 2.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "grad": {
+        "mean": 11.621,
+        "std": 4.579,
+        "uniq": 9841
+      }
+    },
+    "ffpp_Face2Face|label=1": {
+      "bytes": {
+        "mean": 138217.692,
+        "std": 83408.484,
+        "uniq": 9724
+      },
+      "w": {
+        "mean": 1030.912,
+        "std": 436.504,
+        "uniq": 13
+      },
+      "h": {
+        "mean": 636.718,
+        "std": 200.677,
+        "uniq": 4
+      },
+      "q0": {
+        "mean": 369.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "q1": {
+        "mean": 558.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "sub": {
+        "mean": 2.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "grad": {
+        "mean": 11.647,
+        "std": 4.608,
+        "uniq": 9837
+      }
+    },
+    "ffpp_FaceShifter|label=1": {
+      "bytes": {
+        "mean": 138123.324,
+        "std": 82845.587,
+        "uniq": 9680
+      },
+      "w": {
+        "mean": 1036.348,
+        "std": 432.649,
+        "uniq": 28
+      },
+      "h": {
+        "mean": 636.718,
+        "std": 200.677,
+        "uniq": 4
+      },
+      "q0": {
+        "mean": 369.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "q1": {
+        "mean": 558.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "sub": {
+        "mean": 2.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "grad": {
+        "mean": 11.616,
+        "std": 4.589,
+        "uniq": 9849
+      }
+    },
+    "ffpp_FaceSwap|label=1": {
+      "bytes": {
+        "mean": 138966.792,
+        "std": 83149.578,
+        "uniq": 9730
+      },
+      "w": {
+        "mean": 1036.348,
+        "std": 432.649,
+        "uniq": 28
+      },
+      "h": {
+        "mean": 636.718,
+        "std": 200.677,
+        "uniq": 4
+      },
+      "q0": {
+        "mean": 369.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "q1": {
+        "mean": 558.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "sub": {
+        "mean": 2.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "grad": {
+        "mean": 11.614,
+        "std": 4.569,
+        "uniq": 9830
+      }
+    },
+    "ffpp_NeuralTextures|label=1": {
+      "bytes": {
+        "mean": 137189.578,
+        "std": 82654.463,
+        "uniq": 9684
+      },
+      "w": {
+        "mean": 1030.912,
+        "std": 436.504,
+        "uniq": 13
+      },
+      "h": {
+        "mean": 636.718,
+        "std": 200.677,
+        "uniq": 4
+      },
+      "q0": {
+        "mean": 369.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "q1": {
+        "mean": 558.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "sub": {
+        "mean": 2.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "grad": {
+        "mean": 11.68,
+        "std": 4.6,
+        "uniq": 9854
+      }
+    },
+    "ffpp_real|label=0": {
+      "bytes": {
+        "mean": 139057.692,
+        "std": 83397.477,
+        "uniq": 9723
+      },
+      "w": {
+        "mean": 1036.348,
+        "std": 432.649,
+        "uniq": 28
+      },
+      "h": {
+        "mean": 636.718,
+        "std": 200.677,
+        "uniq": 4
+      },
+      "q0": {
+        "mean": 369.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "q1": {
+        "mean": 558.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "sub": {
+        "mean": 2.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "grad": {
+        "mean": 11.636,
+        "std": 4.582,
+        "uniq": 9839
+      }
+    },
+    "kaggle|label=0": {
+      "bytes": {
+        "mean": 28937.773,
+        "std": 3972.807,
+        "uniq": 17182
+      },
+      "w": {
+        "mean": 256.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "h": {
+        "mean": 256.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "q0": {
+        "mean": 369.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "q1": {
+        "mean": 558.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "sub": {
+        "mean": 2.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "grad": {
+        "mean": 11.193,
+        "std": 2.606,
+        "uniq": 57510
+      }
+    },
+    "kaggle|label=1": {
+      "bytes": {
+        "mean": 28515.825,
+        "std": 7938.849,
+        "uniq": 16934
+      },
+      "w": {
+        "mean": 256.132,
+        "std": 10.054,
+        "uniq": 2
+      },
+      "h": {
+        "mean": 256.132,
+        "std": 10.054,
+        "uniq": 2
+      },
+      "q0": {
+        "mean": 368.948,
+        "std": 3.993,
+        "uniq": 2
+      },
+      "q1": {
+        "mean": 557.915,
+        "std": 6.467,
+        "uniq": 2
+      },
+      "sub": {
+        "mean": 2.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "grad": {
+        "mean": 10.912,
+        "std": 2.603,
+        "uniq": 56929
+      }
+    },
+    "kaggle_ext|label=1": {
+      "bytes": {
+        "mean": 28503.714,
+        "std": 4888.747,
+        "uniq": 7170
+      },
+      "w": {
+        "mean": 256.997,
+        "std": 27.656,
+        "uniq": 2
+      },
+      "h": {
+        "mean": 256.997,
+        "std": 27.656,
+        "uniq": 2
+      },
+      "q0": {
+        "mean": 370.933,
+        "std": 53.62,
+        "uniq": 2
+      },
+      "q1": {
+        "mean": 560.885,
+        "std": 80.015,
+        "uniq": 2
+      },
+      "sub": {
+        "mean": 2.0,
+        "std": 0.0,
+        "uniq": 1
+      },
+      "grad": {
+        "mean": 10.875,
+        "std": 2.611,
+        "uniq": 9713
+      }
+    }
+  },
+  "dumb_clf_kaggle(train->test)": {
+    "auc_all_meta": 0.612,
+    "auc_bytes": 0.5476,
+    "auc_w": 0.5,
+    "auc_h": 0.5,
+    "auc_q0": 0.5,
+    "auc_q1": 0.5,
+    "auc_sub": 0.5,
+    "auc_mean_r": 0.5009,
+    "auc_mean_g": 0.5031,
+    "auc_mean_b": 0.5079,
+    "auc_std": 0.5288,
+    "auc_grad": 0.542
+  },
+  "dumb_clf_ffpp_all(train_actors->test_actors)": {
+    "auc_all_meta": 0.5591,
+    "auc_bytes": 0.5066,
+    "auc_w": 0.5079,
+    "auc_h": 0.5037,
+    "auc_q0": 0.5,
+    "auc_q1": 0.5,
+    "auc_sub": 0.5,
+    "auc_mean_r": 0.5352,
+    "auc_mean_g": 0.5311,
+    "auc_mean_b": 0.5239,
+    "auc_std": 0.5271,
+    "auc_grad": 0.5014
+  },
+  "dumb_clf_ffpp_Deepfakes": {
+    "auc_all_meta": 0.4999,
+    "auc_bytes": 0.5042,
+    "auc_w": 0.5002,
+    "auc_h": 0.5037,
+    "auc_q0": 0.5,
+    "auc_q1": 0.5,
+    "auc_sub": 0.5,
+    "auc_mean_r": 0.5336,
+    "auc_mean_g": 0.5301,
+    "auc_mean_b": 0.5227,
+    "auc_std": 0.527,
+    "auc_grad": 0.5012
+  },
+  "dumb_clf_ffpp_FaceSwap": {
+    "auc_all_meta": 0.5088,
+    "auc_bytes": 0.5017,
+    "auc_w": 0.5002,
+    "auc_h": 0.5037,
+    "auc_q0": 0.5,
+    "auc_q1": 0.5,
+    "auc_sub": 0.5,
+    "auc_mean_r": 0.5346,
+    "auc_mean_g": 0.5308,
+    "auc_mean_b": 0.5235,
+    "auc_std": 0.5264,
+    "auc_grad": 0.5006
+  },
+  "dumb_clf_ffpp_FaceShifter": {
+    "auc_all_meta": 0.5233,
+    "auc_bytes": 0.5055,
+    "auc_w": 0.5002,
+    "auc_h": 0.5037,
+    "auc_q0": 0.5,
+    "auc_q1": 0.5,
+    "auc_sub": 0.5,
+    "auc_mean_r": 0.5333,
+    "auc_mean_g": 0.5296,
+    "auc_mean_b": 0.5231,
+    "auc_std": 0.5265,
+    "auc_grad": 0.5005
+  },
+  "dumb_clf_ffpp_Face2Face": {
+    "auc_all_meta": 0.728,
+    "auc_bytes": 0.5084,
+    "auc_w": 0.52,
+    "auc_h": 0.5037,
+    "auc_q0": 0.5,
+    "auc_q1": 0.5,
+    "auc_sub": 0.5,
+    "auc_mean_r": 0.5374,
+    "auc_mean_g": 0.5333,
+    "auc_mean_b": 0.5259,
+    "auc_std": 0.5273,
+    "auc_grad": 0.5019
+  },
+  "dumb_clf_ffpp_NeuralTextures": {
+    "auc_all_meta": 0.7247,
+    "auc_bytes": 0.5132,
+    "auc_w": 0.52,
+    "auc_h": 0.5037,
+    "auc_q0": 0.5,
+    "auc_q1": 0.5,
+    "auc_sub": 0.5,
+    "auc_mean_r": 0.5373,
+    "auc_mean_g": 0.5317,
+    "auc_mean_b": 0.5245,
+    "auc_std": 0.5285,
+    "auc_grad": 0.5041
+  },
+  "dumb_clf_dataset_identity_real_only": {
+    "auc_all_meta": 1.0,
+    "auc_bytes": 1.0,
+    "auc_w": 1.0,
+    "auc_h": 1.0,
+    "auc_q0": 0.5,
+    "auc_q1": 0.5,
+    "auc_sub": 0.5,
+    "auc_mean_r": 0.7338,
+    "auc_mean_g": 0.5946,
+    "auc_mean_b": 0.5686,
+    "auc_std": 0.5374,
+    "auc_grad": 0.5168
+  }
+}

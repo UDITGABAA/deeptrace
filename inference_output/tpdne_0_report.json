@@ -1,0 +1,10 @@
+{
+  "file": "test_data\\fake\\tpdne_0.jpg",
+  "prediction": "FAKE",
+  "fake_probability": 0.4677,
+  "confidence": 0.3853,
+  "manipulation_type": "Deepfakes",
+  "threshold": 0.1341,
+  "heatmap_path": "inference_output\\tpdne_0_heatmap.png",
+  "forensic_explanation": "============================================================\nFORENSIC ANALYSIS REPORT\n============================================================\n\nFile: test_data\\fake\\tpdne_0.jpg\nVerdict: FAKE\nConfidence: 38.5%\nFake Probability: 46.8%\n\n--- MANIPULATION ANALYSIS ---\nDetected Type: Deepfakes\nDescription: Face swap manipulation detected using deep learning-based face replacement (Deepfakes/autoencoder method).\n\n--- ARTIFACT ANALYSIS ---\nSpatial artifacts include boundary inconsistencies, blending artifacts, and unnatural texture patterns at manipulation boundaries.\n\n--- CONFIDENCE ASSESSMENT ---\nLOW CONFIDENCE: Weak indicators. Results should be verified with additional analysis.\n\nArtifact Heatmap: inference_output\\tpdne_0_heatmap.png\n\n============================================================"
+}
