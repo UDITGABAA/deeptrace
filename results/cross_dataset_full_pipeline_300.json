@@ -1,0 +1,100 @@
+{
+  "pipeline": "raw image -> MTCNN -> 1.3x crop -> JPEG75 -> model (all branches+fusion) -> hflip TTA -> T -> threshold",
+  "test_set": "300 raw FF++ c23 frames, 400 held-out test actors: 150 real + 30 per manipulation, 1 frame/video, seed 7",
+  "kaggle_only_model": {
+    "trained_on": "Kaggle only (1 epoch, stopped early for time)",
+    "settings_from_kaggle_val": {
+      "val_auc_plain": 0.872,
+      "val_auc_tta": 0.872,
+      "use_tta": true,
+      "temperature": 0.5243,
+      "threshold": 0.41
+    },
+    "kaggle_val_full_pipeline": {
+      "n_scored": 2000,
+      "no_face": 0,
+      "auc": 0.872,
+      "recall_fake": 0.83,
+      "specificity_real": 0.75,
+      "bal_acc": 0.79,
+      "brier": 0.1461,
+      "ece": 0.0273,
+      "confusion": {
+        "tp": 830,
+        "fn": 170,
+        "tn": 750,
+        "fp": 250
+      }
+    },
+    "ffpp_cross_dataset_300": {
+      "n_scored": 300,
+      "no_face": 0,
+      "auc": 0.6396,
+      "recall_fake": 0.8267,
+      "specificity_real": 0.3333,
+      "bal_acc": 0.58,
+      "brier": 0.2737,
+      "ece": 0.1684,
+      "confusion": {
+        "tp": 124,
+        "fn": 26,
+        "tn": 50,
+        "fp": 100
+      },
+      "per_cohort_auc_vs_150_reals": {
+        "Deepfakes": 0.721,
+        "FaceSwap": 0.5399,
+        "FaceShifter": 0.6298,
+        "Face2Face": 0.6004,
+        "NeuralTextures": 0.707
+      }
+    },
+    "ffpp_cross_dataset_300_plain_no_tta_no_T": {
+      "n_scored": 300,
+      "no_face": 0,
+      "auc": 0.6396,
+      "recall_fake": 0.84,
+      "specificity_real": 0.3267,
+      "bal_acc": 0.5833,
+      "brier": 0.2456,
+      "ece": 0.0803,
+      "confusion": {
+        "tp": 126,
+        "fn": 24,
+        "tn": 49,
+        "fp": 101
+      }
+    }
+  },
+  "v12_reference_same_300": {
+    "trained_on": "Kaggle + FF++ train actors (within-dataset reference)",
+    "settings": {
+      "use_tta": true,
+      "temperature": 1.384,
+      "threshold": 0.63
+    },
+    "ffpp_300": {
+      "n_scored": 300,
+      "no_face": 0,
+      "auc": 0.8732,
+      "recall_fake": 0.6933,
+      "specificity_real": 0.8733,
+      "bal_acc": 0.7833,
+      "brier": 0.1507,
+      "ece": 0.0861,
+      "confusion": {
+        "tp": 104,
+        "fn": 46,
+        "tn": 131,
+        "fp": 19
+      },
+      "per_cohort_auc_vs_150_reals": {
+        "Deepfakes": 0.9449,
+        "FaceSwap": 0.9311,
+        "FaceShifter": 0.8967,
+        "Face2Face": 0.8122,
+        "NeuralTextures": 0.781
+      }
+    }
+  }
+}

@@ -248,6 +248,42 @@ The published values below are frame-level AUC from the DeepfakeBench README (gi
 
 ---
 
+### 8b. Full-pipeline cross-dataset check (300 raw FF++ frames)
+
+**Pipeline.** Raw frame → MTCNN face detection → 1.3× crop → JPEG-75 → model (all branches + fusion) → flip TTA → temperature → threshold.
+
+**Settings for the Kaggle-only model.** TTA, temperature and threshold were chosen on **Kaggle validation only** (2,000 raw images through the same pipeline). No FF++ information was used.
+
+**Test set.** 300 raw FF++ c23 frames from the held-out test actors: 150 real and 30 per manipulation, one frame per video, fixed seed. Script: `scripts/cross_dataset_full_pipeline_check.py`; output: `results/cross_dataset_full_pipeline_300.json`.
+
+| Same 300 raw FF++ frames | AUC | Recall | Specificity | Bal. acc. | Brier | ECE |
+|---|---|---|---|---|---|---|
+| DeepTrace, Kaggle only (cross-dataset; T = 0.524, thr 0.41 from Kaggle val) | **0.640** | 82.7% | 33.3% | 58.0% | 0.274 | 0.168 |
+| Same model without TTA or temperature | 0.640 | 84.0% | 32.7% | 58.3% | 0.246 | 0.080 |
+| *V12, within-dataset reference (T = 1.384, thr 0.63)* | *0.873* | *69.3%* | *87.3%* | *78.3%* | *0.151* | *0.086* |
+
+Per-manipulation AUC, Kaggle-only model (V12 in brackets):
+
+| Manipulation | Kaggle-only | V12 |
+|---|---|---|
+| Deepfakes | 0.721 | 0.945 |
+| FaceSwap | 0.540 | 0.931 |
+| FaceShifter | 0.630 | 0.897 |
+| Face2Face | 0.600 | 0.812 |
+| NeuralTextures | 0.707 | 0.781 |
+
+**Findings:**
+1. **The full raw-frame pipeline reproduces the benchmark.**
+   - V12 scores AUC 0.873, recall 69.3% and specificity 87.3% on these 300 raw frames.
+   - Its full 11,100-frame test gave 0.873, 68.9% and 88.0%.
+2. **Cross-dataset transfer stays weak through the full pipeline (AUC 0.64).** The model labels most FF++ faces "fake" (specificity 33%).
+3. **Calibration does not transfer across datasets.**
+   - The temperature fit on Kaggle (T = 0.52) sharpens probabilities that are already wrong on FF++, so ECE rises from 0.080 to 0.168.
+   - TTA did not change Kaggle-validation AUC (0.872 both ways).
+4. **Small sample.** With 300 frames, AUC is uncertain by roughly ±0.06, and each per-manipulation AUC rests on only 30 fakes.
+
+---
+
 ## 9. Robustness and shortcut checks
 
 - **Scene-memorisation probe.** This uses FF++ fakes whose background video belongs to a *training* actor while the swapped-in face belongs to a test actor. Such fakes are scored against the test reals.
