@@ -39,6 +39,9 @@ logger = logging.getLogger("v11_honest_eval")
 
 COHORTS = ["Deepfakes", "FaceSwap", "FaceShifter", "Face2Face", "NeuralTextures"]
 KAGGLE = Path("data/kaggle_realfake/real_vs_fake/real-vs-fake")
+IMG_SIZE = 160  # overwritten from checkpoint args in main()
+TTA = False
+TEMP = 1.0     # temperature from <ckpt_dir>/output_calibration.json (fit on val)
 
 
 def _jpeg(im, q):
@@ -56,7 +59,7 @@ PERTURB = {
 
 class DS(Dataset):
     def __init__(self, paths, perturb=None):
-        self.paths, self.perturb, self.tf = paths, perturb, get_val_transforms(160)
+        self.paths, self.perturb, self.tf = paths, perturb, get_val_transforms(IMG_SIZE)
 
     def __len__(self):
         return len(self.paths)
@@ -73,9 +76,13 @@ def infer(model, paths, device, perturb=None):
     dl = DataLoader(DS(paths, perturb), batch_size=64, num_workers=4, pin_memory=True)
     out = []
     for x in dl:
+        x = x.to(device, non_blocking=True)
         with AMPContext(device=device, enabled=True):
-            out.append(model(x.to(device, non_blocking=True)).float().cpu().numpy())
-    return np.nan_to_num(np.concatenate(out), nan=0.0)
+            z = model(x)
+            if TTA:  # average logits with the horizontally flipped view
+                z = 0.5 * (z + model(torch.flip(x, dims=[3])))
+        out.append(z.float().cpu().numpy())
+    return np.nan_to_num(np.concatenate(out), nan=0.0) / TEMP  # temperature-scaled logits
 
 
 sig = lambda z: 1 / (1 + np.exp(-np.clip(z, -20, 20)))
@@ -103,9 +110,27 @@ def video_boot_ci(y, s, vids, B=1000, seed=0):
     return [r4(np.percentile(out, 2.5)), r4(np.percentile(out, 97.5))]
 
 
+def ece(y, p, bins=15):
+    conf = np.where(p >= 0.5, p, 1 - p); pred = (p >= 0.5).astype(int)
+    e = 0.0
+    edges = np.linspace(0.5, 1, bins + 1)
+    for lo, hi in zip(edges[:-1], edges[1:]):
+        m = (conf >= lo) & (conf <= hi) if lo == 0.5 else (conf > lo) & (conf <= hi)
+        if m.any():
+            e += m.mean() * abs((pred[m] == y[m]).mean() - conf[m].mean())
+    return r4(e)
+
+
 def binary_report(y, logit, thr, vids=None):
     y = np.asarray(y); p = sig(np.asarray(logit))
-    rep = {"n": int(len(y)), "auc": r4(roc_auc_score(y, logit)),
+    pred = p >= thr
+    tp, fn = int(np.sum(pred & (y == 1))), int(np.sum(~pred & (y == 1)))
+    tn, fp = int(np.sum(~pred & (y == 0))), int(np.sum(pred & (y == 0)))
+    rep = {"n": int(len(y)), "auc": r4(roc_auc_score(y, logit)), "ece": ece(y, p),
+           "recall_fake@frozen_thr": r4(tp / max(1, tp + fn)),        # share of fakes caught
+           "specificity_real@frozen_thr": r4(tn / max(1, tn + fp)),   # share of reals passed
+           "precision_fake@frozen_thr": r4(tp / max(1, tp + fp)),
+           "confusion@frozen_thr": {"tp": tp, "fn": fn, "tn": tn, "fp": fp},
            "bal_acc@frozen_thr": bal_acc(y, p, thr), "frozen_thr": thr, "bal_acc@0.5": bal_acc(y, p, 0.5),
            "oracle_bal_acc(test-tuned, upper bound only)": oracle_bal_acc(y, p),
            "brier": r4(brier_score_loss(y, p))}
@@ -122,8 +147,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--checkpoint", default="checkpoints/v11_clean/best_model.pth")
     ap.add_argument("--faces_manifest", default="manifests/ffpp_c23_faces256_manifest.csv")
-    ap.add_argument("--out_dir", default="results/benchmark_eval_v11")
+    ap.add_argument("--out_dir", default=None, help="default: results/benchmark_eval_<checkpoint dir name>")
     ap.add_argument("--skip_robustness", action="store_true")
+    ap.add_argument("--tta", action="store_true", help="hflip TTA (only if chosen on VAL first)")
+    ap.add_argument("--no_calibration", action="store_true",
+                    help="ignore output_calibration.json (TTA/temperature/thresholds chosen on val)")
     args = ap.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -131,16 +159,34 @@ def main():
     if not ckpt.get("clean_lineage"):
         raise RuntimeError("Checkpoint lacks clean_lineage flag — not a guarded V11 run.")
     thr = ckpt["thresholds"]
+    global IMG_SIZE, TTA, TEMP
+    IMG_SIZE = int(ckpt.get("args", {}).get("image_size", 160))
+    TTA = args.tta
+    calib_file = Path(args.checkpoint).parent / "output_calibration.json"
+    calib = None
+    if calib_file.exists() and not args.no_calibration:
+        calib = json.loads(calib_file.read_text())
+        TTA, TEMP, thr = calib["use_tta"], calib["temperature"], calib["thresholds"]
+        logger.info(f"Using val-chosen output settings: TTA={TTA}, T={TEMP}, thresholds={thr}")
     model = V10EvalDetector(DeepfakeDetector())
     model.load_state_dict(ckpt["model_state_dict"], strict=True)
     model.to(device).eval()
-    out_dir = Path(args.out_dir); out_dir.mkdir(parents=True, exist_ok=True)
+    out_dir = Path(args.out_dir or f"results/benchmark_eval_{Path(args.checkpoint).parent.name}")
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     # ---------- evaluation pools
     k_paths, k_y = [], []
-    for c, y in [("real", 0), ("fake", 1)]:
-        ps = sorted(str(p) for p in (KAGGLE / "test" / c).glob("*.jpg"))
-        k_paths += ps; k_y += [y] * len(ps)
+    kfm = ckpt.get("args", {}).get("kaggle_faces_manifest")
+    if kfm:  # model trained on MTCNN-cropped Kaggle -> evaluate on the cropped test images (= app pipeline)
+        km = pd.read_csv(kfm)
+        kt = km[km.split == "test"].sort_values("filepath")
+        k_paths, k_y = kt.filepath.tolist(), kt.label.tolist()
+        report_kaggle_note = f"MTCNN crops of Kaggle test ({len(kt)} of 20000 had a detectable face)"
+    else:
+        for c, y in [("real", 0), ("fake", 1)]:
+            ps = sorted(str(p) for p in (KAGGLE / "test" / c).glob("*.jpg"))
+            k_paths += ps; k_y += [y] * len(ps)
+        report_kaggle_note = "raw Kaggle test images (no MTCNN crop)"
     fdf = pd.read_csv(args.faces_manifest)
     sp = get_actor_disjoint_split(fdf, filepath_col="filepath")
     ff = pd.concat([sp["test_reals"].assign(manip="real", y=0)] +
@@ -153,13 +199,15 @@ def main():
     guard = assert_no_content_overlap(train_paths, {"kaggle_test": k_paths, "ffpp_test": ff.filepath.tolist(),
                                                     "ffpp_mixed_pairs": mixed.filepath.tolist()})
 
-    report = {"checkpoint": args.checkpoint, "epoch": ckpt.get("epoch"), "lineage": ckpt.get("lineage"),
+    report = {"checkpoint": args.checkpoint, "epoch": ckpt.get("epoch"), "image_size": IMG_SIZE, "tta": TTA, "temperature": TEMP, "output_calibration": calib, "lineage": ckpt.get("lineage"),
               "frozen_thresholds_from_val": thr, "val_metrics_at_selection": ckpt.get("metrics"),
               "leakage_guard": guard}
 
     # ---------- Kaggle (in-domain StyleGAN2 vs FFHQ)
     k_logit = infer(model, k_paths, device)
+    pd.DataFrame({"filepath": k_paths, "y": k_y, "logit": k_logit}).to_csv(out_dir / "kaggle_test_logits.csv", index=False)
     report["kaggle_test"] = binary_report(k_y, k_logit, thr["kaggle"])
+    report["kaggle_test"]["input"] = report_kaggle_note
 
     # ---------- FF++ test actors (face crops)
     ff["logit"] = infer(model, ff.filepath.tolist(), device)
@@ -194,14 +242,18 @@ def main():
             fs = sorted(str(p) for p in (root / c).glob("*") if p.is_file())
             ps += fs; ys += [y] * len(fs)
         if ps:
-            ood[name] = binary_report(ys, infer(model, ps, device), thr["kaggle"])
+            zs = infer(model, ps, device)
+            pd.DataFrame({"filepath": ps, "y": ys, "logit": zs}).to_csv(out_dir / f"{name}_logits.csv", index=False)
+            ood[name] = binary_report(ys, zs, thr["kaggle"])
     report["ood"] = ood
 
     # ---------- robustness per domain
     if not args.skip_robustness:
         rob = {"kaggle_test_2000": {}, "ffpp_test_all": {}}
         rng = np.random.RandomState(0)
-        ksel = np.r_[rng.choice(10000, 1000, replace=False), 10000 + rng.choice(10000, 1000, replace=False)]
+        ky_all = np.asarray(k_y)
+        ksel = np.r_[rng.choice(np.where(ky_all == 0)[0], 1000, replace=False),
+                     rng.choice(np.where(ky_all == 1)[0], 1000, replace=False)]
         kp, ky = [k_paths[i] for i in ksel], np.array(k_y)[ksel]
         rob["kaggle_test_2000"]["pristine"] = r4(roc_auc_score(ky, k_logit[ksel]))
         rob["ffpp_test_all"]["pristine"] = report["ffpp_test"]["all_cohorts"]["auc"]

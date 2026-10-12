@@ -2,14 +2,15 @@ project:
   name: DeepTrace
   root: c:/Users/Udit/Desktop/deepfake1
   last_updated: 2026-10-11
-  status: v11_clean_training_PAUSED_after_epoch5  # see AGENT_HANDOVER.md "AUDIT 2026-10-10" + audit_v10_claude/AUDIT_REPORT.md
+  status: v12_dense_trained_and_tested  # see AGENT_HANDOVER.md "AUDIT 2026-10-10" + audit_v10_claude/AUDIT_REPORT.md
   audit_2026_10_10: "V10 lineage contaminated (Kaggle test fakes in V1 training; V3-V5 trained on FF++ test actors). V10 numbers reproduce but are not leak-free."
 
   obsidian_vault: root  # vault = project root, HOME.md = MOC. All governance graphs connected.
 
 # ─── ACTIVE CHECKPOINTS ────────────────────────────────────────────
 checkpoint:
-  v11_clean_in_progress: checkpoints/v11_clean/best_model.pth  # clean_lineage=True, epoch 5/15, val FF++ macro AUC 0.812, Kaggle val AUC 0.942; TEST NOT YET RUN
+  active_v12_dense: checkpoints/v12_dense/best_model.pth  # ACTIVE (2026-10-11). clean_lineage=True, epoch 13, 224px, TTA+T=1.384; TEST: FF++ unseen-actor macro AUC 0.873 (video 0.905), bal acc 78.5%, recall 68.9%/spec 88.0%; Kaggle (MTCNN crops) AUC 0.989, recall 94.5%/spec 95.3%; results/benchmark_eval_v12_dense/
+  v11_clean: checkpoints/v11_clean/best_model.pth  # superseded by V12. clean_lineage=True, epoch 9; TEST: FF++ unseen-actor macro AUC 0.802 (video 0.838), bal acc 72.0% @ frozen thr; Kaggle AUC 0.9645; results/benchmark_eval_v11/
   active_v10: checkpoints/v10_robust/best_model.pth # AUDIT: NOT actor-disjoint at weight level (lineage V3-V5), see audit_v10_claude/
   actor_disjoint_v9: checkpoints/v9_actor_disjoint/best_model.pth
   active_v7: checkpoints/v7_sota_spectral/best_model.pth

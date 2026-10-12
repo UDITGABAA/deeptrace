@@ -41,14 +41,27 @@ language      → short, clear, low-token (caveman-style ok)
 - FF++ frames were never face-cropped. V10 memorises training scenes (mixed-pair probe AUC 0.10).
 - **Do not warm-start from any V1–V10 checkpoint.** Use `scripts/train_v11_clean.py` (guards enforce this).
 
-### V11 status (PAUSED 2026-10-11 00:08 by user, after epoch 5 of 15)
-- DONE: dup folder quarantined · FF++ face-cropped (59,980/60,000 kept; `manifests/ffpp_c23_faces256_manifest.csv`, crops in `D:\datasets\ffpp_c23\faces256\`) · 3-way split (540/60/400) · `utils/leakage_guard.py` · `scripts/train_v11_clean.py` · `scripts/evaluate_v11_honest.py` · `verify_no_leakage.py` CHECK 8 (lineage)
-- Guards on full run: 40,798 train files, 0 MD5 dups vs val / Kaggle test / FF++ test; 0 shared actors
-- Checkpoints: `checkpoints/v11_clean/best_model.pth` = epoch 5 (also `last.pth`), `training_history.json`, `data_manifest.json`; log `logs/v11_clean/train.log`
-- Val (60 unseen actors) by epoch, FF++ macro AUC / Kaggle AUC: e1 0.714/0.751 · e2 0.766/0.868 · e3 0.802/0.914 · e4 0.810/0.932 · **e5 0.812/0.942** (V10 on test actors: 0.62)
-- Val is small (34 fake videos/cohort) → noisy. TEST SET NOT YET EVALUATED (do it only once, after training ends)
-- RESUME: `venv\Scripts\python.exe scripts\train_v11_clean.py --resume checkpoints/v11_clean/last.pth` (continues at epoch 6; this first last.pth has no optimizer state → AdamW moments restart, LR schedule kept; later last.pth files include optimizer+scaler)
-- THEN: `venv\Scripts\python.exe scripts\evaluate_v11_honest.py --checkpoint checkpoints/v11_clean/best_model.pth`
+### V11 status — TRAINED + TESTED (2026-10-11). SUPERSEDED by V12 (`checkpoints/v12_dense/best_model.pth`, see below)
+- Best = epoch 9 (val-selected), early stop epoch 13. clean_lineage=True. Frozen thresholds: FF++ 0.62, Kaggle 0.78
+- TEST (run once, `results/benchmark_eval_v11/v11_honest_evaluation.json`): FF++ 400 unseen actors macro frame AUC **0.802** (video 0.838; V10 0.607) · DF 0.907 · FSh 0.828 · FS 0.808 · F2F 0.765 · NT 0.700 · bal acc 72.0% @ frozen τ
+- Kaggle test AUC 0.9645 / bal acc 90.0% (V10's 0.9999 was contaminated). Scene probe 0.63 (V10 0.10). FF++ JPEG q30 0.778. OOD _new_dataset 0.45 (labels unverified)
+- Weak: NT/F2F cohorts, residual scene memorisation, Kaggle below V10. Do NOT re-tune on test; any new experiment → select on val, then test once
+- Logs: `logs/v11_clean/` (train.log epochs 1-5, train_resume.log 6-13, eval_test.log)
+
+### Model/output work 2026-10-11 (user: do NOT touch app.py / ui/ — app files restored to git HEAD)
+- `scripts/val_output_study.py` (VAL only): hflip TTA helps all val cohorts → ON; temperature T=1.525; thresholds FF++ 0.66 / Kaggle 0.60 → `checkpoints/v11_clean/output_calibration.json`
+- V11 + those settings on TEST (`results/benchmark_eval_v11_clean/`): FF++ macro AUC 0.802→**0.807**, Brier 0.204→0.184, ECE 0.078; Kaggle AUC 0.9645→0.968
+- `inference/v11_predictor.py` (model-side inference: MTCNN crop → V11), `scripts/fit_v11_app_threshold.py` → `checkpoints/v11_clean/app_threshold.json`
+- FINDING: through MTCNN crop path FF++ test AUC = 0.8016 (identical) but Kaggle test 0.905 (vs 0.9645 raw) — Kaggle was trained un-cropped. Fix in V12: crop ALL sources with the same MTCNN pipeline (`scripts/crop_kaggle_faces.py`)
+- **V12 DONE — NEW BEST / ACTIVE MODEL: `checkpoints/v12_dense/best_model.pth`** (epoch 13 of 18, early stop; clean_lineage=True)
+  - Changes vs V11: 32 frames/video for 540 train actors (66,555 crops, `manifests/ffpp_c23_faces256_dense_train_manifest.csv`) · Kaggle MTCNN-cropped like FF++ (25k/class train; `manifests/kaggle_faces256_manifest.csv`) · input 224 · same val images as V11 (`--val_from`)
+  - Val-chosen output settings (`checkpoints/v12_dense/output_calibration.json`): hflip TTA ON, T=1.384, thresholds FF++ 0.63 / Kaggle 0.74
+  - TEST (once, `results/benchmark_eval_v12_dense/`, robustness not yet run): FF++ unseen-actor macro AUC **0.873** (video 0.905; V11 0.807, V10 0.607) · DF 0.951 · FS 0.883 · FSh 0.887 · F2F 0.844 · NT 0.799 · bal acc 78.5% · recall 68.9% / specificity 88.0%
+  - Kaggle test (MTCNN crops = app path) AUC **0.989**, recall 94.5%, specificity 95.3% (V11 via same path 0.905)
+  - Scene probe 0.78 (V11 0.63, V10 0.10). OOD `_new_dataset` still fails (AUC 0.47, recall 2.7%); `test_data` AUC 0.92
+  - REPORT 2026-10-12: `reports/v12/V12_REPORT.md` (+ `reports/v12/extras.json`, figures). Cross-dataset Kaggle-only → FF++: DeepTrace 0.590 (1 epoch), MesoNet 0.500 (3 epochs) — both stopped early for time; MesoNet same-split Kaggle AUC 0.806 vs V12 0.989
+  - NEXT: robustness run (`evaluate_v11_honest.py --checkpoint checkpoints/v12_dense/best_model.pth` without --skip_robustness); NT/F2F still weakest; Celeb-DF cross-dataset test
+- Windows RAM: DataLoaders passing full-res frames hit MemoryError when 2+ GPU jobs run → run data jobs ONE at a time (2 workers, prefetch 1); extract/crop scripts are resumable
 
 ## CURRENT STATUS (2026-08-21) — superseded by audit above
 - **Active Production Model**: DeepTrace V10 Robust Multi-Source (`checkpoints/v10_robust/best_model.pth`).

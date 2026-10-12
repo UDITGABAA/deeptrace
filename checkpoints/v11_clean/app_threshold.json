@@ -1,0 +1,39 @@
+{
+  "threshold": 0.51,
+  "fit_on": "V11 validation (Kaggle valid 2,000 + FF++ val actors), app pipeline",
+  "checkpoint": "checkpoints/v11_clean/best_model.pth",
+  "val_kaggle": {
+    "n": 1999,
+    "no_face": 1,
+    "auc": 0.897,
+    "bal_acc@thr": 0.821
+  },
+  "val_ffpp": {
+    "n": 2300,
+    "no_face": 0,
+    "auc": 0.8396,
+    "bal_acc@thr": 0.7658
+  },
+  "test_check_app_pipeline": {
+    "kaggle_test_2000": {
+      "n": 1999,
+      "no_face": 1,
+      "auc": 0.9053,
+      "bal_acc@thr": 0.824
+    },
+    "ffpp_test_raw_frames_all": {
+      "n": 11100,
+      "no_face": 0,
+      "auc": 0.8016,
+      "bal_acc@thr": 0.7213
+    },
+    "ffpp_per_cohort_auc": {
+      "Deepfakes": 0.9076,
+      "FaceSwap": 0.8072,
+      "FaceShifter": 0.8273,
+      "Face2Face": 0.7657,
+      "NeuralTextures": 0.7005
+    },
+    "note": "verification only; compare with results/benchmark_eval_v11/v11_honest_evaluation.json"
+  }
+}

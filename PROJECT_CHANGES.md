@@ -2,6 +2,43 @@
 > Append-only. Newest first. Format: `[DATE] [TYPE] Description`
 > Types: TRAIN | CODE | CONFIG | DATA | CLEANUP | FIX | PLAN
 
+## [2026-10-12] BENCHMARK — V12 report: Grad-CAM, Brier, confusion, baseline, cross-dataset (`reports/v12/V12_REPORT.md`)
+- Val Brier/ECE (TTA): all 0.0773/0.0345 → 0.0759/0.0082 after T=1.384; FF++ val 0.1062/0.0573 → 0.1024/0.0235; Kaggle val 0.0441/0.0152 → 0.0455/0.0277. Test Brier: FF++ 0.157, Kaggle 0.048.
+- Confusion (test): Kaggle TN 9520 FP 472 FN 545 TP 9454; FF++ TN 3521 FP 479 FN 2205 TP 4895. Grad-CAM + figures in `reports/v12/figures/`.
+- Baseline MesoNet-4 on identical Kaggle split (stopped at 3/10 epochs for time): Kaggle test AUC 0.806 vs V12 0.989.
+- Cross-dataset (train Kaggle only, test FF++ 400 actors, no fine-tune): DeepTrace (1 epoch) macro AUC 0.590, MesoNet 0.500 — vs V12 0.873 when FF++ is in training. Directional (under-trained). `results/cross_dataset_and_baseline.json`.
+- Scripts: `scripts/v12_report_extras.py`, `scripts/train_baseline_same_split.py`, `scripts/eval_cross_and_baseline.py`; `train_v11_clean.py --kaggle_only`.
+
+## [2026-10-11] BENCHMARK — V12 dense clean model: held-out test (evaluated once)
+- Checkpoint `checkpoints/v12_dense/best_model.pth` (epoch 13, val-selected). Output settings chosen on val only: hflip TTA, temperature 1.384, thresholds FF++ 0.63 / Kaggle 0.74.
+- Leakage guard: 0 of 19,991 Kaggle test crops / 11,100 FF++ test / 25,782 mixed-pair files byte-identical to any of 137,334 training files.
+- FF++ c23, 400 unseen test actors: macro frame AUC **0.873** (V11 0.807, V10 0.607), video AUC 0.905, balanced acc 78.5%, recall 68.9%, specificity 88.0%.
+  - Deepfakes 0.951 (recall 88.2%) · FaceShifter 0.887 (68.9%) · FaceSwap 0.883 (70.7%) · Face2Face 0.844 (63.8%) · NeuralTextures 0.799 (53.1%); specificity 88.0% on the shared reals.
+- Kaggle test via MTCNN crops (= app path): AUC **0.989**, recall 94.5%, specificity 95.3%, ECE 0.021.
+- Scene-memorisation probe 0.78 (V11 0.63, V10 0.10). OOD `_new_dataset` AUC 0.47 (recall 2.7%) — still fails, labels unverified. `test_data` (99 imgs) AUC 0.92.
+- Output: `results/benchmark_eval_v12_dense/` (json + per-image logits for Kaggle, FF++, OOD). Robustness battery not yet run for V12.
+
+## [2026-10-11] TRAIN — V12 dense clean training
+- `scripts/train_v11_clean.py --dense_manifest ... --kaggle_faces_manifest ... --val_from checkpoints/v11_clean/data_manifest.json --max_kaggle 25000 --image_size 224 --epochs 20 --patience 5`
+- Val (same images as V11): FF++ macro AUC 0.916 / Kaggle 0.990 at epoch 13 (V11 on the same val: 0.838 / 0.896). Early stop after epoch 18. Logs `logs/v12_dense/`.
+
+## [2026-10-11] DATA — Dense FF++ train-actor frames + Kaggle MTCNN crops
+- `scripts/extract_ffpp_dense_train_faces.py`: 32 frames/video, ONLY the 540 train actors (hard-checked), 66,555 crops → `D:/datasets/ffpp_c23/faces256_dense`. Val/test actors keep their 10-frame crops.
+- `scripts/crop_kaggle_faces.py`: Kaggle cropped with the same MTCNN pipeline (25k/class train, V11's 2,000 val images, all 20k test) → 71,907 crops, drop rate ≤0.1%/class.
+- Reason: V11 trained on un-cropped Kaggle; through the MTCNN path Kaggle test AUC fell 0.9645 → 0.905 (`checkpoints/v11_clean/app_threshold.json`).
+
+## [2026-10-11] CODE — output quality (validation-only decisions)
+- `scripts/val_output_study.py`: hflip TTA kept if it improves val; temperature fit on val; thresholds re-fit on val → `<ckpt>/output_calibration.json`, read by `scripts/evaluate_v11_honest.py`.
+- V11 with these settings on test: FF++ AUC 0.802→0.807, Brier 0.204→0.184; Kaggle 0.9645→0.968.
+- `scripts/evaluate_v11_honest.py` now reports recall / specificity / precision / confusion at the frozen threshold and saves per-image logits.
+- `inference/v11_predictor.py` (MTCNN crop → model, model-side only). App/UI files untouched (restored to git HEAD at user request).
+
+## [2026-10-11] TRAIN — V11 clean retrain (leak-free)
+- Fresh ImageNet/CLIP init, FF++ face crops, 540/60/400 actor split, MD5 + actor guards, SBI on reals, balanced sampler. Test: FF++ macro AUC 0.802, Kaggle 0.9645. See `audit_v10_claude/AUDIT_REPORT.md` §6a.
+
+## [2026-10-10] FIX — Leakage audit of V10 (`audit_v10_claude/AUDIT_REPORT.md`)
+- Kaggle test fakes were in V1 training (quarantined); V9/V10 lineage trained on FF++ test actors; V10 val = test actors; test-tuned thresholds; pooled robustness; no face crop; dead manipulation loss.
+
 ---
 
 ## [2026-08-21] BENCHMARK — Phase 3: 2026 Full Benchmark & Robustness Matrix Complete

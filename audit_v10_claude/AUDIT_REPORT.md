@@ -100,7 +100,75 @@ Caveat for all FF++ rows: the weight lineage saw these actors.
 6. Fix SBI: blend on **reals** and relabel them as fake, as V7 did. Balance classes or weights.
 7. Extend `verify_no_leakage.py` to cover checkpoint lineage, val∩test, and file hashes.
 
-## 6. Fix progress (V11) — paused 2026-10-11 00:08 after epoch 5/15
+## 6a. V11 final result — held-out TEST (evaluated once, 2026-10-11)
+
+Checkpoint `checkpoints/v11_clean/best_model.pth`: epoch 9, chosen on val actors only. Training early-stopped at epoch 13.
+Thresholds are frozen from val (FF++ 0.62, Kaggle 0.78). The MD5 guard passed: 0 test files identical to any of the 40,798 training files.
+Full output: `results/benchmark_eval_v11/v11_honest_evaluation.json`.
+
+**FF++ c23, 400 unseen test actors, face crops:**
+
+| Cohort | V11 frame AUC (95% CI, video bootstrap) | V11 video AUC | V11 bal. acc @ frozen τ | V10 frame AUC |
+|---|---|---|---|---|
+| Deepfakes | **0.907** (0.881–0.930) | 0.936 | 81.5% | 0.674 |
+| FaceShifter | **0.828** (0.797–0.856) | 0.873 | 73.5% | 0.620 |
+| FaceSwap | **0.808** (0.774–0.839) | 0.848 | 72.1% | 0.584 |
+| Face2Face | **0.765** (0.728–0.803) | 0.801 | 69.3% | 0.578 |
+| NeuralTextures | **0.700** (0.659–0.745) | 0.731 | 63.6% | 0.580 |
+| **Macro** | **0.802** | **0.838** | 72.0% (all cohorts) | 0.607 |
+
+- Every V11 confidence interval lies entirely above V10's point estimate.
+- The test-tuned "oracle" accuracy is only 0.3–1.4 points above frozen-τ accuracy, so the val thresholds transfer.
+- Val→test drop: macro AUC 0.838 → 0.802. That is the normal, honest optimism of selecting on val.
+
+**Other results:**
+
+| Check | V11 | V10 |
+|---|---|---|
+| Kaggle test AUC / bal. acc @ frozen τ | 0.9645 / 90.0% | 0.9999 / 99.6% (lineage trained on these test fakes, and on all 100k Kaggle images) |
+| Scene probe: fake on a **train-actor scene** vs test reals | AUC **0.63**, P(fake) 0.48 | AUC 0.10, P(fake) 0.10 |
+| Scene probe: train-actor face on a test scene | AUC 0.79 | 0.57 |
+| FF++ robustness, pristine → JPEG q50 / q30 / blur k7 / noise σ=0.05 | 0.802 → 0.785 / 0.778 / 0.748 / 0.730 | 0.644 → 0.642 / 0.637 (pooled number reported as 0.90) |
+| Kaggle robustness, same conditions (2,000 images) | 0.969 → 0.965 / 0.961 / 0.947 / 0.945 | — |
+| OOD `_new_dataset` (N=10,905, labels unverified) | AUC 0.45 | 0.31 |
+| OOD `test_data` (N=99) | AUC 0.94 | 0.85 |
+
+**What is still weak:**
+- **Scene memorisation is much smaller but not gone.** Train-scene fakes score 0.63, below the 0.80 normal test level.
+- **NeuralTextures** (0.70) and **Face2Face** (0.77) are the hardest cohorts.
+- **Kaggle in-domain** is 0.96, not 0.9999. More Kaggle data could close part of that gap.
+- **`_new_dataset` OOD still fails.** Its labels have no provenance, so it cannot yet be read as a generalisation test.
+
+## 6b. V12 (current best) — held-out TEST (evaluated once, 2026-10-11)
+
+Checkpoint `checkpoints/v12_dense/best_model.pth` (epoch 13, val-selected; clean lineage).
+
+**Changes from V11:**
+- 32 frames per video for the 540 train actors (66,555 crops). Val and test actors are unchanged.
+- Kaggle MTCNN-cropped like FF++ (25k per class).
+- 224 px input.
+- Same val images as V11.
+- Output settings chosen on val only: hflip TTA, T = 1.384, thresholds FF++ 0.63 / Kaggle 0.74.
+
+Leakage guard: 0 test files byte-identical to any of the 137,334 training files. Output: `results/benchmark_eval_v12_dense/`.
+
+| Dataset (test) | AUC | Recall (fakes caught) | Specificity (reals passed) | Bal. acc | V11 AUC | V10 AUC |
+|---|---|---|---|---|---|---|
+| FF++ Deepfakes | **0.951** (video 0.970) | 88.2% | 88.0% | 88.1% | 0.907 | 0.674 |
+| FF++ FaceShifter | **0.887** | 68.9% | 88.0% | 78.5% | 0.828 | 0.620 |
+| FF++ FaceSwap | **0.883** | 70.7% | 88.0% | 79.4% | 0.808 | 0.584 |
+| FF++ Face2Face | **0.844** | 63.8% | 88.0% | 75.9% | 0.765 | 0.578 |
+| FF++ NeuralTextures | **0.799** | 53.1% | 88.0% | 70.6% | 0.700 | 0.580 |
+| **FF++ macro (400 unseen actors)** | **0.873** (video 0.905) | 68.9% (all) | 88.0% | 78.5% | 0.802 | 0.607 |
+| Kaggle (MTCNN crops = app path) | **0.989** | 94.5% | 95.3% | 94.9% | 0.905 (same path) | 0.9999 (contaminated) |
+| OOD `test_data` (99 images) | 0.922 | 72.0% | 98.0% | 85.0% | 0.940 | 0.850 |
+| OOD `_new_dataset` (unverified labels) | 0.470 | 2.7% | 97.6% | 50.2% | 0.448 | 0.306 |
+
+- **Scene-memorisation probe:** 0.78 (V11 0.63, V10 0.10). Much smaller than before but not zero.
+- **Recall must be read with specificity.** V10 showed 74% FF++ recall only because it called 59% of real videos fake (specificity 41%).
+- **Not yet run for V12:** the robustness battery (JPEG / blur / noise).
+
+## 6. Fix progress (V11) — training complete (resumed 2026-10-11, early stop at epoch 13, best epoch 9)
 
 | Fix | Status |
 |---|---|
@@ -108,7 +176,7 @@ Caveat for all FF++ rows: the weight lineage saw these actors.
 | 2. Clean init, no V1–V10 warm start | ✅ `scripts/train_v11_clean.py`; `assert_clean_lineage()` refuses dirty checkpoints |
 | 3. Face-crop FF++ | ✅ `scripts/crop_ffpp_faces.py` → 59,980/60,000 crops (max drop rate 0.15%, Deepfakes) |
 | 4. Three-way actor split | ✅ `get_actor_disjoint_split_3way`: 540/60/400; test actors identical to V10; no video discarded |
-| 5. Honest reporting | ✅ `scripts/evaluate_v11_honest.py` (frozen val thresholds, per domain, video AUC + CI, scene probe); **not yet run on test** |
+| 5. Honest reporting | ✅ `scripts/evaluate_v11_honest.py`; run once on test (§6a) |
 | 6. SBI on reals, balanced sampling | ✅ in V11 |
 | 7. Guards in verifier | ✅ `utils/leakage_guard.py` (MD5 + actors); `verify_no_leakage.py` CHECK 8 (lineage) |
 | Bonus | ✅ fixed the dead manipulation loss (V10 key bug) |
@@ -123,10 +191,13 @@ V11 validation (60 unseen actors, face crops). Noisy: 34 fake videos per cohort.
 | 2 | 0.766 | 0.868 | 0.714 |
 | 3 | 0.802 | 0.914 | 0.743 |
 | 4 | 0.810 | 0.932 | 0.750 |
-| 5 | **0.812** | **0.942** | 0.750 |
+| 5 | 0.812 | 0.942 | 0.750 |
+| 6 | 0.818 | 0.947 | 0.757 |
+| 7 | 0.827 | 0.955 | 0.763 |
+| 8 | 0.823 | 0.961 | 0.757 |
+| **9 (best)** | **0.838** | **0.961** | **0.770** |
+| 10–13 | 0.827–0.832 | 0.963–0.968 | ≈0.765 → early stop |
 
-Resume: `venv\Scripts\python.exe scripts\train_v11_clean.py --resume checkpoints/v11_clean/last.pth`
-Then (once): `venv\Scripts\python.exe scripts\evaluate_v11_honest.py --checkpoint checkpoints/v11_clean/best_model.pth`
 
 ## 7. Re-running
 ```

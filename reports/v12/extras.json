@@ -1,0 +1,136 @@
+{
+  "checkpoint": "checkpoints\\v12_dense\\best_model.pth",
+  "temperature": 1.384,
+  "thresholds": {
+    "ffpp": 0.63,
+    "kaggle": 0.74
+  },
+  "tta": true,
+  "validation_calibration": {
+    "all_val": {
+      "n": 4299,
+      "auc": 0.9578,
+      "brier_before_T": 0.0773,
+      "brier_after_T": 0.0759,
+      "ece_before_T": 0.0345,
+      "ece_after_T": 0.0082
+    },
+    "kaggle_val": {
+      "n": 1999,
+      "auc": 0.9909,
+      "brier_before_T": 0.0441,
+      "brier_after_T": 0.0455,
+      "ece_before_T": 0.0152,
+      "ece_after_T": 0.0277
+    },
+    "ffpp_val": {
+      "n": 2300,
+      "auc": 0.9226,
+      "brier_before_T": 0.1062,
+      "brier_after_T": 0.1024,
+      "ece_before_T": 0.0573,
+      "ece_after_T": 0.0235
+    }
+  },
+  "test_confusion": {
+    "kaggle_test": {
+      "tn": 9520,
+      "fp": 472,
+      "fn": 545,
+      "tp": 9454,
+      "threshold": 0.74,
+      "brier_test": 0.0478,
+      "ece_test": 0.0207
+    },
+    "ffpp_test_all": {
+      "tn": 3521,
+      "fp": 479,
+      "fn": 2205,
+      "tp": 4895,
+      "threshold": 0.63,
+      "brier_test": 0.157,
+      "ece_test": 0.0787
+    }
+  },
+  "ffpp_classwise_test": {
+    "real": {
+      "n_frames": 4000,
+      "n_videos": 400,
+      "passed_as_real": 0.8802,
+      "mean_p_fake": 0.2281
+    },
+    "Deepfakes": {
+      "n_frames": 1420,
+      "n_videos": 142,
+      "detected_as_fake": 0.8824,
+      "mean_p_fake": 0.886
+    },
+    "FaceSwap": {
+      "n_frames": 1420,
+      "n_videos": 142,
+      "detected_as_fake": 0.707,
+      "mean_p_fake": 0.7455
+    },
+    "FaceShifter": {
+      "n_frames": 1420,
+      "n_videos": 142,
+      "detected_as_fake": 0.6887,
+      "mean_p_fake": 0.7355
+    },
+    "Face2Face": {
+      "n_frames": 1420,
+      "n_videos": 142,
+      "detected_as_fake": 0.638,
+      "mean_p_fake": 0.6747
+    },
+    "NeuralTextures": {
+      "n_frames": 1420,
+      "n_videos": 142,
+      "detected_as_fake": 0.531,
+      "mean_p_fake": 0.5864
+    }
+  },
+  "gradcam_examples": [
+    {
+      "figure": "figures/gradcam_ffpp_fake_Deepfakes.png",
+      "source": "D:\\datasets\\ffpp_c23\\faces256\\Deepfakes\\000_003_frame_0036.jpg",
+      "truth": "fake",
+      "p_fake_calibrated_tta": 0.9938,
+      "threshold": 0.63,
+      "verdict": "FAKE"
+    },
+    {
+      "figure": "figures/gradcam_ffpp_real.png",
+      "source": "D:\\datasets\\ffpp_c23\\faces256\\real\\000_frame_0036.jpg",
+      "truth": "real",
+      "p_fake_calibrated_tta": 0.1538,
+      "threshold": 0.63,
+      "verdict": "REAL"
+    },
+    {
+      "figure": "figures/gradcam_kaggle_fake.png",
+      "source": "data\\kaggle_realfake\\faces256\\test\\fake\\00276TOPP4.jpg",
+      "truth": "fake",
+      "p_fake_calibrated_tta": 0.6668,
+      "threshold": 0.74,
+      "verdict": "REAL"
+    },
+    {
+      "figure": "figures/gradcam_kaggle_real.png",
+      "source": "data\\kaggle_realfake\\faces256\\test\\real\\00001.jpg",
+      "truth": "real",
+      "p_fake_calibrated_tta": 0.1218,
+      "threshold": 0.74,
+      "verdict": "REAL"
+    },
+    {
+      "figure": "figures/gradcam_ffpp_fake_MISSED_Deepfakes.png",
+      "source": "D:\\datasets\\ffpp_c23\\faces256\\Deepfakes\\003_000_frame_0027.jpg",
+      "truth": "fake",
+      "p_fake_calibrated_tta": 0.1099,
+      "threshold": 0.63,
+      "verdict": "REAL"
+    }
+  ],
+  "gradcam_note": "Grad-CAM of the spatial EfficientNet conv_head w.r.t. the binary logit (single, un-flipped view); p_fake shown is the evaluator's calibrated TTA score. Images chosen by a fixed rule, not by hand."
+}

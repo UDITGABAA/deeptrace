@@ -45,7 +45,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from models.detector import DeepfakeDetector
 from scripts.train_v10_robust import V10RobustDetector, compute_spectral_orthogonality_loss
 from datasets.transforms import get_train_transforms, get_val_transforms
-from utils.actor_splits import get_actor_disjoint_split_3way, _extract_video_id
+from utils.actor_splits import get_actor_disjoint_split_3way, _extract_video_id, _extract_actor_ids
 from utils.checkpoint import load_checkpoint
 from utils.device import AMPContext, get_grad_scaler
 from utils.leakage_guard import assert_no_content_overlap, assert_actor_disjoint, assert_clean_lineage
@@ -109,7 +109,8 @@ class V11Dataset(Dataset):
 
 
 # ─── Data ───────────────────────────────────────────────────────────────────────
-def build_data(max_kaggle: int, smoke: bool):
+def build_data(max_kaggle: int, smoke: bool, dense_manifest: str = None, val_from: str = None,
+               kaggle_faces_manifest: str = None, kaggle_only: bool = False):
     rng = random.Random(SEED)
     train, val = [], []
 
@@ -117,7 +118,15 @@ def build_data(max_kaggle: int, smoke: bool):
         lst.append({"path": str(path), "label": label, "manip": MANIP_IDX[manip], "group": group, "sbi": sbi})
 
     # Kaggle: train split only for training; valid split for val; test split is never loaded here
-    for cls, y, man in [("real", 0, "real"), ("fake", 1, "kaggle_fake")]:
+    kaggle_map = None
+    if kaggle_faces_manifest:  # MTCNN-cropped Kaggle images (scripts/crop_kaggle_faces.py) — same preprocessing as FF++
+        km = pd.read_csv(kaggle_faces_manifest)
+        kaggle_map = {str(Path(a)): b for a, b in zip(km.src_filepath, km.filepath)}
+        for cls, y, man in [("real", 0, "real"), ("fake", 1, "kaggle_fake")]:
+            crops = sorted(km[(km.split == "train") & (km.label == y)].filepath)
+            for p in rng.sample(crops, min(max_kaggle, len(crops))):
+                add(train, p, y, man, f"kaggle_{cls}")
+    for cls, y, man in ([] if kaggle_faces_manifest else [("real", 0, "real"), ("fake", 1, "kaggle_fake")]):
         paths = sorted((KAGGLE / "train" / cls).glob("*.jpg"))
         for p in rng.sample(paths, min(max_kaggle, len(paths))):
             add(train, p, y, man, f"kaggle_{cls}")
@@ -130,15 +139,47 @@ def build_data(max_kaggle: int, smoke: bool):
         raise FileNotFoundError(f"{FACES_MANIFEST} missing — run scripts/crop_ffpp_faces.py first")
     df = pd.read_csv(FACES_MANIFEST)
     sp = get_actor_disjoint_split_3way(df, filepath_col="filepath")
-    for p in sp["train_reals"]["filepath"]:
+    if kaggle_only:  # cross-dataset experiment: NO FF++ data at all in train or val (sp only used by the guards)
+        sp_used = {"train_reals": sp["train_reals"].iloc[0:0], "val_reals": sp["val_reals"].iloc[0:0],
+                   "train_fakes": {m: sp["train_fakes"][m].iloc[0:0] for m in COHORTS},
+                   "val_fakes": {m: sp["val_fakes"][m].iloc[0:0] for m in COHORTS}}
+    else:
+        sp_used = sp
+    for p in sp_used["train_reals"]["filepath"]:
         add(train, p, 0, "real", "ffpp_real")
-    for p in sp["val_reals"]["filepath"]:
+    for p in sp_used["val_reals"]["filepath"]:
         add(val, p, 0, "real", "ffpp_real")
     for m in COHORTS:
-        for p in sp["train_fakes"][m]["filepath"]:
+        for p in sp_used["train_fakes"][m]["filepath"]:
             add(train, p, 1, m, f"ffpp_{m}")
-        for p in sp["val_fakes"][m]["filepath"]:
+        for p in sp_used["val_fakes"][m]["filepath"]:
             add(val, p, 1, m, f"ffpp_{m}")
+
+    # Optional extra frames (scripts/extract_ffpp_dense_train_faces.py) — TRAIN actors only, hard-checked
+    if dense_manifest and not kaggle_only:
+        dd = pd.read_csv(dense_manifest, dtype={"video_id": str})
+        for vid in dd["video_id"].astype(str).unique():
+            a, b = _extract_actor_ids(vid)
+            if not (a in sp["train_actors"] and b in sp["train_actors"]):
+                raise RuntimeError(f"LEAKAGE: dense manifest contains non-train actor video {vid}")
+        for p, m in zip(dd["filepath"], dd["manipulation_type"]):
+            add(train, p, 0 if m == "real" else 1, m, "ffpp_real" if m == "real" else f"ffpp_{m}")
+        logger.info(f"Added {len(dd)} dense train-actor crops from {dense_manifest}")
+
+    # Optional: reuse an earlier run's exact validation list (keeps val identical across experiments)
+    if val_from:
+        group2manip = {"kaggle_real": "real", "kaggle_fake": "kaggle_fake", "ffpp_real": "real",
+                       **{f"ffpp_{m}": m for m in COHORTS}}
+        val = []
+        for path, label, group in json.load(open(val_from))["val"]:
+            if kaggle_only and group.startswith("ffpp"):
+                continue
+            if group.startswith("kaggle") and kaggle_map is not None:
+                if str(Path(path)) not in kaggle_map:  # MTCNN found no face -> cannot be scored by the app either
+                    continue
+                path = kaggle_map[str(Path(path))]
+            add(val, path, label, group2manip[group], group)
+        logger.info(f"Validation list loaded from {val_from} ({len(val)} items)")
 
     # SBI entries: every training REAL can also be drawn as a self-blended FAKE
     reals = [s for s in train if s["label"] == 0]
@@ -155,6 +196,10 @@ def run_guards(train, val, sp):
     train_paths = sorted({s["path"] for s in train})
     test_ffpp = list(sp["test_reals"]["filepath"]) + [p for m in COHORTS for p in sp["test_fakes"][m]["filepath"]]
     kaggle_test = [str(p) for c in ("real", "fake") for p in sorted((KAGGLE / "test" / c).glob("*.jpg"))]
+    kf = Path("manifests/kaggle_faces256_manifest.csv")
+    if kf.exists():  # also guard against the cropped versions of the Kaggle test images
+        km = pd.read_csv(kf)
+        kaggle_test += km[km.split == "test"].filepath.tolist()
     report = {
         "md5": assert_no_content_overlap(train_paths, {
             "val": sorted({s["path"] for s in val}), "kaggle_test": kaggle_test, "ffpp_test": test_ffpp}),
@@ -251,8 +296,12 @@ def val_metrics(val, logits):
     m["ffpp_val_cohort_auc"] = cohort_aucs
     m["ffpp_val_macro_auc"] = round(float(np.mean(list(cohort_aucs.values()))), 4) if cohort_aucs else 0.0
     f = np.char.startswith(g.astype(str), "ffpp")
-    m["threshold_ffpp"], m["ffpp_val_bal_acc"] = balanced_acc_threshold(y[f], p[f])
     m["threshold_kaggle"], m["kaggle_val_bal_acc"] = balanced_acc_threshold(y[k], p[k])
+    if not f.any():  # Kaggle-only (cross-dataset) run: no FF++ information may be used, FF++ gets the Kaggle threshold
+        m["threshold_ffpp"], m["ffpp_val_bal_acc"], m["ffpp_val_bal_acc@0.5"] = m["threshold_kaggle"], None, None
+        m["selection_score"] = m["kaggle_val_auc"]
+        return m
+    m["threshold_ffpp"], m["ffpp_val_bal_acc"] = balanced_acc_threshold(y[f], p[f])
     m["ffpp_val_bal_acc@0.5"] = round(float(0.5 * (np.mean(p[f][y[f] == 1] >= 0.5) + np.mean(p[f][y[f] == 0] < 0.5))), 4)
     # selection score: FF++ is the hard, generalisation-relevant part; Kaggle must not collapse
     m["selection_score"] = round(0.75 * m["ffpp_val_macro_auc"] + 0.25 * m["kaggle_val_auc"], 4)
@@ -267,6 +316,11 @@ def main():
     ap.add_argument("--batch_size", type=int, default=32)
     ap.add_argument("--accumulation", type=int, default=2)
     ap.add_argument("--max_kaggle", type=int, default=10000)
+    ap.add_argument("--dense_manifest", default=None, help="extra train-actor FF++ crops (V12)")
+    ap.add_argument("--val_from", default=None, help="data_manifest.json of an earlier run: reuse its exact val list")
+    ap.add_argument("--image_size", type=int, default=160)
+    ap.add_argument("--kaggle_faces_manifest", default=None, help="manifests/kaggle_faces256_manifest.csv (V12)")
+    ap.add_argument("--kaggle_only", action="store_true", help="cross-dataset run: train/val on Kaggle only, FF++ never seen")
     ap.add_argument("--patience", type=int, default=4)
     ap.add_argument("--out_dir", default="checkpoints/v11_clean")
     ap.add_argument("--warm_start", default=None, help="only checkpoints with clean_lineage=True are accepted")
@@ -284,7 +338,8 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     out_dir = Path(args.out_dir); out_dir.mkdir(parents=True, exist_ok=True)
 
-    train, val, sp = build_data(args.max_kaggle, args.smoke)
+    train, val, sp = build_data(args.max_kaggle, args.smoke, args.dense_manifest, args.val_from,
+                                args.kaggle_faces_manifest, args.kaggle_only)
     guard_report = run_guards(train, val, sp)
     with open(out_dir / "data_manifest.json", "w") as f:
         json.dump({"train": [(s["path"], s["label"], s["group"], s["sbi"]) for s in train],
@@ -316,10 +371,10 @@ def main():
             g["lr"] = lr * max(f, 0.01)
 
     scaler = get_grad_scaler(device=device)
-    train_loader = DataLoader(V11Dataset(train, get_train_transforms(160), True), batch_size=args.batch_size,
+    train_loader = DataLoader(V11Dataset(train, get_train_transforms(args.image_size), True), batch_size=args.batch_size,
                               sampler=make_sampler(train, args.epoch_size), num_workers=args.num_workers,
                               pin_memory=args.pin_memory, persistent_workers=args.num_workers > 0, drop_last=True)
-    val_loader = DataLoader(V11Dataset(val, get_val_transforms(160), False), batch_size=64, shuffle=False,
+    val_loader = DataLoader(V11Dataset(val, get_val_transforms(args.image_size), False), batch_size=64, shuffle=False,
                             num_workers=args.val_workers, pin_memory=args.pin_memory, persistent_workers=args.val_workers > 0)
 
     best, bad_epochs, history, opt_step, start_epoch = -1.0, 0, [], 0, 1

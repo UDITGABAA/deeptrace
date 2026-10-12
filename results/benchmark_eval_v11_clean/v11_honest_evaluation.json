@@ -1,0 +1,251 @@
+{
+  "checkpoint": "checkpoints/v11_clean/best_model.pth",
+  "epoch": 9,
+  "image_size": 160,
+  "tta": true,
+  "temperature": 1.5251,
+  "output_calibration": {
+    "checkpoint": "checkpoints/v11_clean/best_model.pth",
+    "image_size": 160,
+    "decided_on": "validation only",
+    "val_plain": {
+      "kaggle_auc": 0.9609,
+      "ffpp_cohort_auc": {
+        "Deepfakes": 0.9256,
+        "FaceSwap": 0.8634,
+        "FaceShifter": 0.832,
+        "Face2Face": 0.7946,
+        "NeuralTextures": 0.7721
+      },
+      "ffpp_macro_auc": 0.8375
+    },
+    "val_tta": {
+      "kaggle_auc": 0.9645,
+      "ffpp_cohort_auc": {
+        "Deepfakes": 0.9301,
+        "FaceSwap": 0.8684,
+        "FaceShifter": 0.8372,
+        "Face2Face": 0.7954,
+        "NeuralTextures": 0.7831
+      },
+      "ffpp_macro_auc": 0.8428
+    },
+    "use_tta": true,
+    "temperature": 1.5251,
+    "val_ece_before": 0.0558,
+    "val_ece_after(in-sample)": 0.0196,
+    "val_nll_before": 0.4078,
+    "val_nll_after": 0.3803,
+    "thresholds": {
+      "ffpp": 0.66,
+      "kaggle": 0.6
+    },
+    "val_bal_acc_at_thresholds": {
+      "ffpp": 0.7815,
+      "kaggle": 0.901
+    }
+  },
+  "lineage": {
+    "init": "imagenet_efficientnet_b0 + openai_clip_vit_b32",
+    "warm_start": null
+  },
+  "frozen_thresholds_from_val": {
+    "ffpp": 0.66,
+    "kaggle": 0.6
+  },
+  "val_metrics_at_selection": {
+    "kaggle_val_auc": 0.9609,
+    "ffpp_val_cohort_auc": {
+      "Deepfakes": 0.9256,
+      "FaceSwap": 0.8634,
+      "FaceShifter": 0.832,
+      "Face2Face": 0.7946,
+      "NeuralTextures": 0.7721
+    },
+    "ffpp_val_macro_auc": 0.8375,
+    "threshold_ffpp": 0.62,
+    "ffpp_val_bal_acc": 0.7701,
+    "threshold_kaggle": 0.78,
+    "kaggle_val_bal_acc": 0.8985,
+    "ffpp_val_bal_acc@0.5": 0.7622,
+    "selection_score": 0.8684,
+    "epoch": 9,
+    "train_loss": 0.5179
+  },
+  "leakage_guard": {
+    "n_train": 40798,
+    "kaggle_test": {
+      "n": 20000,
+      "content_duplicates_in_train": 0
+    },
+    "ffpp_test": {
+      "n": 11100,
+      "content_duplicates_in_train": 0
+    },
+    "ffpp_mixed_pairs": {
+      "n": 25782,
+      "content_duplicates_in_train": 0
+    }
+  },
+  "kaggle_test": {
+    "n": 20000,
+    "auc": 0.9679,
+    "ece": 0.0397,
+    "bal_acc@frozen_thr": 0.905,
+    "frozen_thr": 0.6,
+    "bal_acc@0.5": 0.8937,
+    "oracle_bal_acc(test-tuned, upper bound only)": 0.9076,
+    "brier": 0.0821
+  },
+  "ffpp_test": {
+    "Deepfakes": {
+      "n": 5420,
+      "auc": 0.9116,
+      "ece": 0.042,
+      "bal_acc@frozen_thr": 0.8331,
+      "frozen_thr": 0.66,
+      "bal_acc@0.5": 0.8107,
+      "oracle_bal_acc(test-tuned, upper bound only)": 0.8351,
+      "brier": 0.1603,
+      "video_auc": 0.9375,
+      "n_videos": 542,
+      "frame_auc_95ci_video_bootstrap": [
+        0.8861,
+        0.934
+      ]
+    },
+    "FaceSwap": {
+      "n": 5420,
+      "auc": 0.8119,
+      "ece": 0.0604,
+      "bal_acc@frozen_thr": 0.7187,
+      "frozen_thr": 0.66,
+      "bal_acc@0.5": 0.7244,
+      "oracle_bal_acc(test-tuned, upper bound only)": 0.7316,
+      "brier": 0.1867,
+      "video_auc": 0.8477,
+      "n_videos": 542,
+      "frame_auc_95ci_video_bootstrap": [
+        0.7778,
+        0.8432
+      ]
+    },
+    "FaceShifter": {
+      "n": 5420,
+      "auc": 0.8317,
+      "ece": 0.0498,
+      "bal_acc@frozen_thr": 0.7324,
+      "frozen_thr": 0.66,
+      "bal_acc@0.5": 0.748,
+      "oracle_bal_acc(test-tuned, upper bound only)": 0.7501,
+      "brier": 0.1801,
+      "video_auc": 0.8721,
+      "n_videos": 542,
+      "frame_auc_95ci_video_bootstrap": [
+        0.7999,
+        0.8606
+      ]
+    },
+    "Face2Face": {
+      "n": 5420,
+      "auc": 0.7722,
+      "ece": 0.0739,
+      "bal_acc@frozen_thr": 0.6898,
+      "frozen_thr": 0.66,
+      "bal_acc@0.5": 0.7005,
+      "oracle_bal_acc(test-tuned, upper bound only)": 0.7046,
+      "brier": 0.1971,
+      "video_auc": 0.8045,
+      "n_videos": 542,
+      "frame_auc_95ci_video_bootstrap": [
+        0.7356,
+        0.8094
+      ]
+    },
+    "NeuralTextures": {
+      "n": 5420,
+      "auc": 0.7063,
+      "ece": 0.0929,
+      "bal_acc@frozen_thr": 0.6285,
+      "frozen_thr": 0.66,
+      "bal_acc@0.5": 0.6424,
+      "oracle_bal_acc(test-tuned, upper bound only)": 0.6498,
+      "brier": 0.2155,
+      "video_auc": 0.7345,
+      "n_videos": 542,
+      "frame_auc_95ci_video_bootstrap": [
+        0.6656,
+        0.7502
+      ]
+    },
+    "macro_frame_auc": 0.8067,
+    "macro_video_auc": 0.8393,
+    "all_cohorts": {
+      "n": 11100,
+      "auc": 0.8067,
+      "ece": 0.0777,
+      "bal_acc@frozen_thr": 0.7205,
+      "frozen_thr": 0.66,
+      "bal_acc@0.5": 0.7252,
+      "oracle_bal_acc(test-tuned, upper bound only)": 0.7269,
+      "brier": 0.1841,
+      "video_auc": 0.89,
+      "n_videos": 542,
+      "frame_auc_95ci_video_bootstrap": [
+        0.779,
+        0.8346
+      ]
+    }
+  },
+  "scene_memorisation_probe": {
+    "scene=train_actor,face=test_actor": {
+      "n": 12888,
+      "mean_p_fake": 0.4897,
+      "auc_vs_test_reals": 0.6327
+    },
+    "scene=test_actor,face=train_actor": {
+      "n": 12894,
+      "mean_p_fake": 0.6735,
+      "auc_vs_test_reals": 0.7969
+    },
+    "note": "V10: scene=train gave AUC 0.10 (memorised scenes). ~= normal test AUC means no scene memorisation."
+  },
+  "ood": {
+    "newds_test": {
+      "n": 10905,
+      "auc": 0.4475,
+      "ece": 0.2697,
+      "bal_acc@frozen_thr": 0.4993,
+      "frozen_thr": 0.6,
+      "bal_acc@0.5": 0.4961,
+      "oracle_bal_acc(test-tuned, upper bound only)": 0.503,
+      "brier": 0.3482
+    },
+    "test_data": {
+      "n": 99,
+      "auc": 0.9469,
+      "ece": 0.1148,
+      "bal_acc@frozen_thr": 0.8788,
+      "frozen_thr": 0.6,
+      "bal_acc@0.5": 0.8378,
+      "oracle_bal_acc(test-tuned, upper bound only)": 0.8898,
+      "brier": 0.0994
+    }
+  },
+  "robustness_auc_per_domain": {
+    "kaggle_test_2000": {
+      "pristine": 0.9714,
+      "jpeg_q50": 0.9663,
+      "jpeg_q30": 0.9623,
+      "blur_k7": 0.9509,
+      "noise_s05": 0.9463
+    },
+    "ffpp_test_all": {
+      "pristine": 0.8067,
+      "jpeg_q50": 0.7882,
+      "jpeg_q30": 0.7827,
+      "blur_k7": 0.7524,
+      "noise_s05": 0.7369
+    }
+  }
+}

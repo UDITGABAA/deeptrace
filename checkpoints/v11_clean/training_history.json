@@ -1,5 +1,5 @@
 {
-  "best_selection_score": 0.8592,
+  "best_selection_score": 0.8684,
   "history": [
     {
       "kaggle_val_auc": 0.751,
@@ -133,6 +133,120 @@
       "selection_score": 0.8592,
       "epoch": 7,
       "train_loss": 0.5446
+    },
+    {
+      "kaggle_val_auc": 0.9608,
+      "ffpp_val_cohort_auc": {
+        "Deepfakes": 0.9227,
+        "FaceSwap": 0.8499,
+        "FaceShifter": 0.8364,
+        "Face2Face": 0.7612,
+        "NeuralTextures": 0.7463
+      },
+      "ffpp_val_macro_auc": 0.8233,
+      "threshold_ffpp": 0.53,
+      "ffpp_val_bal_acc": 0.7572,
+      "threshold_kaggle": 0.82,
+      "kaggle_val_bal_acc": 0.9,
+      "ffpp_val_bal_acc@0.5": 0.756,
+      "selection_score": 0.8577,
+      "epoch": 8,
+      "train_loss": 0.5253
+    },
+    {
+      "kaggle_val_auc": 0.9609,
+      "ffpp_val_cohort_auc": {
+        "Deepfakes": 0.9256,
+        "FaceSwap": 0.8634,
+        "FaceShifter": 0.832,
+        "Face2Face": 0.7946,
+        "NeuralTextures": 0.7721
+      },
+      "ffpp_val_macro_auc": 0.8375,
+      "threshold_ffpp": 0.62,
+      "ffpp_val_bal_acc": 0.7701,
+      "threshold_kaggle": 0.78,
+      "kaggle_val_bal_acc": 0.8985,
+      "ffpp_val_bal_acc@0.5": 0.7622,
+      "selection_score": 0.8684,
+      "epoch": 9,
+      "train_loss": 0.5179
+    },
+    {
+      "kaggle_val_auc": 0.9641,
+      "ffpp_val_cohort_auc": {
+        "Deepfakes": 0.9176,
+        "FaceSwap": 0.8464,
+        "FaceShifter": 0.8159,
+        "Face2Face": 0.7671,
+        "NeuralTextures": 0.7526
+      },
+      "ffpp_val_macro_auc": 0.8199,
+      "threshold_ffpp": 0.72,
+      "ffpp_val_bal_acc": 0.7616,
+      "threshold_kaggle": 0.73,
+      "kaggle_val_bal_acc": 0.9045,
+      "ffpp_val_bal_acc@0.5": 0.7449,
+      "selection_score": 0.8559,
+      "epoch": 10,
+      "train_loss": 0.5012
+    },
+    {
+      "kaggle_val_auc": 0.9637,
+      "ffpp_val_cohort_auc": {
+        "Deepfakes": 0.9245,
+        "FaceSwap": 0.8612,
+        "FaceShifter": 0.8343,
+        "Face2Face": 0.7797,
+        "NeuralTextures": 0.7599
+      },
+      "ffpp_val_macro_auc": 0.8319,
+      "threshold_ffpp": 0.58,
+      "ffpp_val_bal_acc": 0.7648,
+      "threshold_kaggle": 0.51,
+      "kaggle_val_bal_acc": 0.905,
+      "ffpp_val_bal_acc@0.5": 0.763,
+      "selection_score": 0.8648,
+      "epoch": 11,
+      "train_loss": 0.5027
+    },
+    {
+      "kaggle_val_auc": 0.9684,
+      "ffpp_val_cohort_auc": {
+        "Deepfakes": 0.9284,
+        "FaceSwap": 0.8588,
+        "FaceShifter": 0.8336,
+        "Face2Face": 0.7804,
+        "NeuralTextures": 0.7591
+      },
+      "ffpp_val_macro_auc": 0.8321,
+      "threshold_ffpp": 0.63,
+      "ffpp_val_bal_acc": 0.763,
+      "threshold_kaggle": 0.66,
+      "kaggle_val_bal_acc": 0.9115,
+      "ffpp_val_bal_acc@0.5": 0.7551,
+      "selection_score": 0.8662,
+      "epoch": 12,
+      "train_loss": 0.498
+    },
+    {
+      "kaggle_val_auc": 0.9663,
+      "ffpp_val_cohort_auc": {
+        "Deepfakes": 0.9208,
+        "FaceSwap": 0.8698,
+        "FaceShifter": 0.8293,
+        "Face2Face": 0.7686,
+        "NeuralTextures": 0.7472
+      },
+      "ffpp_val_macro_auc": 0.8271,
+      "threshold_ffpp": 0.52,
+      "ffpp_val_bal_acc": 0.7657,
+      "threshold_kaggle": 0.65,
+      "kaggle_val_bal_acc": 0.907,
+      "ffpp_val_bal_acc@0.5": 0.7614,
+      "selection_score": 0.8619,
+      "epoch": 13,
+      "train_loss": 0.4918
     }
   ]
 }

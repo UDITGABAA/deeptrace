@@ -1,0 +1,22 @@
+{
+  "n_frames_per_video": 32,
+  "n_videos": 1034,
+  "per_class": {
+    "FaceSwap": {
+      "frames": 3520,
+      "kept": 3519
+    },
+    "FaceShifter": {
+      "frames": 9856,
+      "kept": 9856
+    },
+    "Face2Face": {
+      "frames": 9856,
+      "kept": 9856
+    },
+    "NeuralTextures": {
+      "frames": 9856,
+      "kept": 9856
+    }
+  }
+}

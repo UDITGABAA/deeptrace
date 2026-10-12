@@ -1,0 +1,294 @@
+{
+  "note": "Evaluation only. Both models trained on Kaggle only and stopped early for time (DeepTrace-Kaggle-only: 1 epoch; MesoNet: 3 of 10 epochs) -> results are directional, not converged. Threshold fit on Kaggle validation and applied unchanged to FF++.",
+  "deeptrace_kaggle_only": {
+    "meta": {
+      "epochs_trained": 1,
+      "val_auc": 0.8692
+    },
+    "threshold_from_kaggle_val": 0.51,
+    "val_kaggle": {
+      "n": 1999,
+      "auc": 0.8692,
+      "recall_fake": 0.752,
+      "specificity_real": 0.8208,
+      "precision_fake": 0.8077,
+      "bal_acc": 0.7864,
+      "brier": 0.1584,
+      "ece": 0.0964,
+      "confusion": {
+        "tp": 752,
+        "fn": 248,
+        "tn": 820,
+        "fp": 179
+      },
+      "threshold": 0.51
+    },
+    "kaggle_test": {
+      "n": 19991,
+      "auc": 0.8725,
+      "recall_fake": 0.7555,
+      "specificity_real": 0.8247,
+      "precision_fake": 0.8117,
+      "bal_acc": 0.7901,
+      "brier": 0.1564,
+      "ece": 0.0969,
+      "confusion": {
+        "tp": 7554,
+        "fn": 2445,
+        "tn": 8240,
+        "fp": 1752
+      },
+      "threshold": 0.51
+    },
+    "ffpp_cross_dataset": {
+      "Deepfakes": {
+        "n": 5420,
+        "auc": 0.7135,
+        "recall_fake": 0.8465,
+        "specificity_real": 0.4012,
+        "precision_fake": 0.3342,
+        "bal_acc": 0.6239,
+        "brier": 0.2841,
+        "ece": 0.1615,
+        "confusion": {
+          "tp": 1202,
+          "fn": 218,
+          "tn": 1605,
+          "fp": 2395
+        },
+        "threshold": 0.51
+      },
+      "FaceSwap": {
+        "n": 5420,
+        "auc": 0.4453,
+        "recall_fake": 0.5331,
+        "specificity_real": 0.4012,
+        "precision_fake": 0.2402,
+        "bal_acc": 0.4672,
+        "brier": 0.3181,
+        "ece": 0.2231,
+        "confusion": {
+          "tp": 757,
+          "fn": 663,
+          "tn": 1605,
+          "fp": 2395
+        },
+        "threshold": 0.51
+      },
+      "FaceShifter": {
+        "n": 5420,
+        "auc": 0.5797,
+        "recall_fake": 0.7021,
+        "specificity_real": 0.4012,
+        "precision_fake": 0.2939,
+        "bal_acc": 0.5517,
+        "brier": 0.3001,
+        "ece": 0.1845,
+        "confusion": {
+          "tp": 997,
+          "fn": 423,
+          "tn": 1605,
+          "fp": 2395
+        },
+        "threshold": 0.51
+      },
+      "Face2Face": {
+        "n": 5420,
+        "auc": 0.5968,
+        "recall_fake": 0.757,
+        "specificity_real": 0.4012,
+        "precision_fake": 0.3098,
+        "bal_acc": 0.5791,
+        "brier": 0.2972,
+        "ece": 0.17,
+        "confusion": {
+          "tp": 1075,
+          "fn": 345,
+          "tn": 1605,
+          "fp": 2395
+        },
+        "threshold": 0.51
+      },
+      "NeuralTextures": {
+        "n": 5420,
+        "auc": 0.6128,
+        "recall_fake": 0.7528,
+        "specificity_real": 0.4012,
+        "precision_fake": 0.3086,
+        "bal_acc": 0.577,
+        "brier": 0.2954,
+        "ece": 0.1743,
+        "confusion": {
+          "tp": 1069,
+          "fn": 351,
+          "tn": 1605,
+          "fp": 2395
+        },
+        "threshold": 0.51
+      },
+      "all": {
+        "n": 11100,
+        "auc": 0.5896,
+        "recall_fake": 0.7183,
+        "specificity_real": 0.4012,
+        "precision_fake": 0.6805,
+        "bal_acc": 0.5598,
+        "brier": 0.2375,
+        "ece": 0.0607,
+        "confusion": {
+          "tp": 5100,
+          "fn": 2000,
+          "tn": 1605,
+          "fp": 2395
+        },
+        "threshold": 0.51
+      },
+      "macro_auc": 0.5896
+    }
+  },
+  "mesonet_baseline": {
+    "meta": {
+      "epochs_trained": "3 of 10 (stopped for time)"
+    },
+    "threshold_from_kaggle_val": 0.49,
+    "val_kaggle": {
+      "n": 1999,
+      "auc": 0.7862,
+      "recall_fake": 0.729,
+      "specificity_real": 0.6977,
+      "precision_fake": 0.7071,
+      "bal_acc": 0.7133,
+      "brier": 0.1932,
+      "ece": 0.0601,
+      "confusion": {
+        "tp": 729,
+        "fn": 271,
+        "tn": 697,
+        "fp": 302
+      },
+      "threshold": 0.49
+    },
+    "kaggle_test": {
+      "n": 19991,
+      "auc": 0.8055,
+      "recall_fake": 0.7492,
+      "specificity_real": 0.708,
+      "precision_fake": 0.7197,
+      "bal_acc": 0.7286,
+      "brier": 0.187,
+      "ece": 0.0728,
+      "confusion": {
+        "tp": 7491,
+        "fn": 2508,
+        "tn": 7074,
+        "fp": 2918
+      },
+      "threshold": 0.49
+    },
+    "ffpp_cross_dataset": {
+      "Deepfakes": {
+        "n": 5420,
+        "auc": 0.4934,
+        "recall_fake": 0.5134,
+        "specificity_real": 0.4813,
+        "precision_fake": 0.26,
+        "bal_acc": 0.4973,
+        "brier": 0.2884,
+        "ece": 0.1328,
+        "confusion": {
+          "tp": 729,
+          "fn": 691,
+          "tn": 1925,
+          "fp": 2075
+        },
+        "threshold": 0.49
+      },
+      "FaceSwap": {
+        "n": 5420,
+        "auc": 0.4989,
+        "recall_fake": 0.5338,
+        "specificity_real": 0.4813,
+        "precision_fake": 0.2676,
+        "bal_acc": 0.5075,
+        "brier": 0.2875,
+        "ece": 0.1291,
+        "confusion": {
+          "tp": 758,
+          "fn": 662,
+          "tn": 1925,
+          "fp": 2075
+        },
+        "threshold": 0.49
+      },
+      "FaceShifter": {
+        "n": 5420,
+        "auc": 0.515,
+        "recall_fake": 0.5577,
+        "specificity_real": 0.4813,
+        "precision_fake": 0.2762,
+        "bal_acc": 0.5195,
+        "brier": 0.2852,
+        "ece": 0.1265,
+        "confusion": {
+          "tp": 792,
+          "fn": 628,
+          "tn": 1925,
+          "fp": 2075
+        },
+        "threshold": 0.49
+      },
+      "Face2Face": {
+        "n": 5420,
+        "auc": 0.4988,
+        "recall_fake": 0.5197,
+        "specificity_real": 0.4813,
+        "precision_fake": 0.2624,
+        "bal_acc": 0.5005,
+        "brier": 0.2874,
+        "ece": 0.1297,
+        "confusion": {
+          "tp": 738,
+          "fn": 682,
+          "tn": 1925,
+          "fp": 2075
+        },
+        "threshold": 0.49
+      },
+      "NeuralTextures": {
+        "n": 5420,
+        "auc": 0.4923,
+        "recall_fake": 0.512,
+        "specificity_real": 0.4813,
+        "precision_fake": 0.2595,
+        "bal_acc": 0.4966,
+        "brier": 0.2886,
+        "ece": 0.1303,
+        "confusion": {
+          "tp": 727,
+          "fn": 693,
+          "tn": 1925,
+          "fp": 2075
+        },
+        "threshold": 0.49
+      },
+      "all": {
+        "n": 11100,
+        "auc": 0.4997,
+        "recall_fake": 0.5273,
+        "specificity_real": 0.4813,
+        "precision_fake": 0.6434,
+        "bal_acc": 0.5043,
+        "brier": 0.2699,
+        "ece": 0.123,
+        "confusion": {
+          "tp": 3744,
+          "fn": 3356,
+          "tn": 1925,
+          "fp": 2075
+        },
+        "threshold": 0.49
+      },
+      "macro_auc": 0.4997
+    }
+  }
+}

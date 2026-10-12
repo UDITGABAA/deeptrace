@@ -1,0 +1,18 @@
+{
+  "best_selection_score": 0.8692,
+  "history": [
+    {
+      "kaggle_val_auc": 0.8692,
+      "ffpp_val_cohort_auc": {},
+      "ffpp_val_macro_auc": 0.0,
+      "threshold_kaggle": 0.51,
+      "kaggle_val_bal_acc": 0.7864,
+      "threshold_ffpp": 0.51,
+      "ffpp_val_bal_acc": null,
+      "ffpp_val_bal_acc@0.5": null,
+      "selection_score": 0.8692,
+      "epoch": 1,
+      "train_loss": 0.862
+    }
+  ]
+}

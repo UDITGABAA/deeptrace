@@ -1,0 +1,41 @@
+{
+  "checkpoint": "checkpoints/v12_dense/best_model.pth",
+  "image_size": 224,
+  "decided_on": "validation only",
+  "val_plain": {
+    "kaggle_auc": 0.9901,
+    "ffpp_cohort_auc": {
+      "Deepfakes": 0.9775,
+      "FaceSwap": 0.9596,
+      "FaceShifter": 0.9077,
+      "Face2Face": 0.8725,
+      "NeuralTextures": 0.8634
+    },
+    "ffpp_macro_auc": 0.9161
+  },
+  "val_tta": {
+    "kaggle_auc": 0.9909,
+    "ffpp_cohort_auc": {
+      "Deepfakes": 0.979,
+      "FaceSwap": 0.9641,
+      "FaceShifter": 0.9129,
+      "Face2Face": 0.8837,
+      "NeuralTextures": 0.8731
+    },
+    "ffpp_macro_auc": 0.9226
+  },
+  "use_tta": true,
+  "temperature": 1.384,
+  "val_ece_before": 0.0345,
+  "val_ece_after(in-sample)": 0.0081,
+  "val_nll_before": 0.2668,
+  "val_nll_after": 0.2528,
+  "thresholds": {
+    "ffpp": 0.63,
+    "kaggle": 0.74
+  },
+  "val_bal_acc_at_thresholds": {
+    "ffpp": 0.8526,
+    "kaggle": 0.957
+  }
+}

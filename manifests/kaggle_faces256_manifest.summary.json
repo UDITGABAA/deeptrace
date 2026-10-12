@@ -1,0 +1,32 @@
+{
+  "train/real": {
+    "total": 25000,
+    "kept": 24984,
+    "drop_rate": 0.0006
+  },
+  "train/fake": {
+    "total": 25000,
+    "kept": 24997,
+    "drop_rate": 0.0001
+  },
+  "valid/real": {
+    "total": 1000,
+    "kept": 999,
+    "drop_rate": 0.001
+  },
+  "valid/fake": {
+    "total": 1000,
+    "kept": 1000,
+    "drop_rate": 0.0
+  },
+  "test/real": {
+    "total": 10000,
+    "kept": 9992,
+    "drop_rate": 0.0008
+  },
+  "test/fake": {
+    "total": 10000,
+    "kept": 9999,
+    "drop_rate": 0.0001
+  }
+}
