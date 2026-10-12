@@ -186,6 +186,40 @@ Even after only 1 epoch, the DeepTrace architecture beats the 3-epoch MesoNet on
 
 ---
 
+## 7b. Comparison with published detectors (DeepfakeBench, NeurIPS 2023)
+
+The published values below are frame-level AUC from the DeepfakeBench README (github.com/SCLBD/DeepfakeBench), with every detector trained and tested on FF++ c23.
+
+> ⚠️ **Not a like-for-like comparison.**
+> - DeepfakeBench uses the official FF++ split (720/140/140 videos), 256 px, and 4 manipulations.
+> - DeepTrace V12 uses a stricter actor-disjoint split (540/60/400 actors) at 224 px, includes FaceShifter, and trains jointly with Kaggle StyleGAN data.
+> - Read the gaps as approximate.
+
+| Detector (published) | FF++ c23 AUC | DF | F2F | FS | NT |
+|---|---|---|---|---|---|
+| Meso4 | 0.608 | 0.677 | 0.617 | 0.595 | 0.570 |
+| MesoInception | 0.758 | 0.854 | 0.809 | 0.742 | 0.652 |
+| Capsule | 0.842 | 0.867 | 0.863 | 0.873 | 0.780 |
+| CNN-Aug | 0.849 | 0.905 | 0.879 | 0.903 | 0.731 |
+| FWA | 0.877 | 0.921 | 0.900 | 0.884 | 0.812 |
+| **DeepTrace V12 (ours)** | **0.873** | **0.951** | **0.844** | **0.883** | **0.799** |
+| EfficientNet-B4 | 0.957 | 0.976 | 0.976 | 0.980 | 0.931 |
+| Face X-ray | 0.959 | 0.979 | 0.987 | 0.987 | 0.929 |
+| Xception | 0.964 | 0.980 | 0.979 | 0.983 | 0.939 |
+| UCF (best in benchmark) | 0.971 | 0.988 | 0.984 | 0.990 | 0.944 |
+
+**Reading:**
+- **Position.** V12 sits in the middle tier, level with FWA, Capsule and CNN-Aug, and about **0.09 AUC below** the Xception, EfficientNet-B4 and UCF tier.
+- **Where the gap is.** It is smallest on Deepfakes (0.951 vs 0.980) and largest on Face2Face and NeuralTextures (−0.13 to −0.14).
+- **Likely causes.**
+  - Partial fine-tuning: only the top EfficientNet blocks are unfrozen.
+  - 224 px input.
+  - Far fewer FF++ training frames (about 1,700 videos at 10–32 frames each).
+  - Joint training with StyleGAN data.
+- **Cross-dataset context.** In DeepfakeBench, the FF++→Celeb-DF v2 AUC of the top detectors is only 0.73–0.77. Cross-dataset weakness is the norm for this field, not specific to DeepTrace. Our own cross-dataset test (Kaggle→FF++, §8) uses a different direction and is not directly comparable.
+
+---
+
 ## 8. Cross-dataset generalisation: train on Kaggle, test on FaceForensics++ (no fine-tuning)
 
 **Protocol.**
